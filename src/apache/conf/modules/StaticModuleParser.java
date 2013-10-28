@@ -70,6 +70,8 @@ public class StaticModuleParser extends ModuleParser {
 		}
 		reader.close();
 		
+		Utils.removeDuplicates(modules);
+		
 		return modules.toArray(new StaticModule[modules.size()]);
 	}
 

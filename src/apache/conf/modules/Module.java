@@ -36,4 +36,14 @@ public class Module
 	{
 		return type;
 	}
+	
+	@Override
+	public boolean equals(Object o){
+		return (((Module)o).getName().equals(this.name) && ((Module)o).getType() == this.type);
+	}
+	
+	@Override
+	public int hashCode() {
+        return name.hashCode() + type.hashCode();
+    }
 }

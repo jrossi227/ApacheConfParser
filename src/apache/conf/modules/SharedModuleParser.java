@@ -73,6 +73,8 @@ public class SharedModuleParser extends ModuleParser{
 		}
 		reader.close();
 		
+		Utils.removeDuplicates(modules);
+		
 		return modules.toArray(new SharedModule[modules.size()]);
 	}
 }
