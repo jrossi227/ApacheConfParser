@@ -36,10 +36,16 @@ public class Define {
 	public Define(String directiveValue) {
 		directiveValue=Utils.sanitizeLineSpaces(directiveValue);
 		
-		String parts[]=directiveValue.replaceAll("\\\\", "/").replaceFirst(" ", "@@").split("@@");
-		name=parts[0];
-		value=parts[1];
+		name="";
+		value="";
 		
+		String parts[]=directiveValue.replaceAll("\\\\", "/").replaceFirst(" ", "@@").split("@@");
+		if(parts.length > 1) {
+			name=parts[0];
+		}
+		if(parts.length > 2) {
+			value=parts[1];
+		}
 	}	
 
 	public String getName() {
