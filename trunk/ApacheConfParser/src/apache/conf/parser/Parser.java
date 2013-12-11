@@ -333,26 +333,19 @@ public class Parser {
 	 * @throws Exception
 	 */
 	public String[] getActiveConfFileList() throws Exception
-	{
-		ArrayList<String> recursiveFiles = new ArrayList<String>();
-		
-		getActiveConfFileList(rootConfFile, recursiveFiles);
+	{		
+		ArrayList<String> recursiveFiles = getActiveConfFileList(rootConfFile);
 		
 		return recursiveFiles.toArray(new String[recursiveFiles.size()]);
 	}
 	
-	private void getActiveConfFileList(String rootConfFile, ArrayList<String> recursiveFiles) throws Exception
-	{
-		//Add the main conf file first, we only process the main conf file once
-		if(recursiveFiles.size()==0) {
-			recursiveFiles.add(rootConfFile);
-		}
-		
+	private ArrayList<String> getActiveConfFileList(String confFile) throws Exception
+	{	
 		ArrayList<String> files = new ArrayList<String>();
 		
 		Pattern includePattern=Pattern.compile(Const.includeDirective, Pattern.CASE_INSENSITIVE);
 		
-		ParsableLine lines[] = getParsableLines(new File(rootConfFile));
+		ParsableLine lines[] = getParsableLines(new File(confFile));
 		
 		String strLine="";
 		for(int i=0; i<lines.length; i++) 
@@ -420,14 +413,19 @@ public class Parser {
 			}
 		}	
 		
-		recursiveFiles.addAll(files);
-		Utils.removeDuplicates(recursiveFiles);
-		
-		for (int i=0; i<files.size(); i++)
+		String tempList[] = files.toArray(new String[files.size()]);
+		for (int i=0; i<tempList.length; i++)
 		{
-			if((new File(files.get(i))).exists())
-				getActiveConfFileList(files.get(i), recursiveFiles);
+			if((new File(tempList[i]).exists())) {
+				files.addAll(getActiveConfFileList(tempList[i]));
+			}
 		}
+		
+		files.add(confFile);
+		
+		Utils.removeDuplicates(files);
+		
+		return files;
 		
 	}
 }
