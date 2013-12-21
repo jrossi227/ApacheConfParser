@@ -143,6 +143,27 @@ public class DirectiveParser extends Parser {
 	 */
 	public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, boolean before) throws Exception
 	{
+		return insertDirectiveBeforeOrAfterFirstFound(directiveType, directiveString, "", before);
+	}
+	
+	/**
+	 * <p>
+	 * Inserts a directive string before or after the first found matching directive type and matches the matchesRegex.
+	 * </p>
+	 * <p>
+	 * For Example: <br/>
+	 * If you specify a directive type of "Listen", matches ".*[^0-9]70([^0-9].*|)" and a directive String of "Listen 127.0.0.1:80" then this directive String would be inserted after the first "Listen" directive with a value containing the number "70" in the configuration eg. "Listen 70"
+	 * </p>
+	 * 
+	 * @param directiveType The directive name. This is not case sensitive.
+	 * @param directiveString The directive string to insert.
+	 * @param matches A filter that is used to check whether or not the directive matches a certain Regex. This is not case sensitive
+	 * @param before a boolean indicating whether the directiveString should be inserted before the first found directive. true for before,false for after.
+	 * @return a boolean indicating if the directive was found.
+	 * @throws Exception
+	 */
+	public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, String matchesRegex, boolean before) throws Exception
+	{
 		directiveType="\\b" + directiveType + "\\b";
 		
 		String includedFiles[]= getActiveConfFileList();
@@ -175,7 +196,7 @@ public class DirectiveParser extends Parser {
 					}
 					
 					if(lines[j].isInclude()) {	
-						if(!isCommentMatch(cmpLine) && isDirectiveMatch(cmpLine,directiveType))
+						if(!isCommentMatch(cmpLine) && isDirectiveMatch(cmpLine,directiveType) && cmpLine.toLowerCase().matches(matchesRegex.toLowerCase()))
 						{
 							fileText.append(directiveString + Const.newLine);
 							foundFile=includedFiles[i];
