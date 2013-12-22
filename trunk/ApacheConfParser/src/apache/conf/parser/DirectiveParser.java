@@ -143,7 +143,7 @@ public class DirectiveParser extends Parser {
 	 */
 	public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, boolean before) throws Exception
 	{
-		return insertDirectiveBeforeOrAfterFirstFound(directiveType, directiveString, "", before);
+		return insertDirectiveBeforeOrAfterFirstFound(directiveType, directiveString, ".*", before);
 	}
 	
 	/**
