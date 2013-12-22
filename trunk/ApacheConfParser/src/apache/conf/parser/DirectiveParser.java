@@ -78,7 +78,7 @@ public class DirectiveParser extends Parser {
 						
 						if(!isCommentMatch(strLine) && isDirectiveMatch(strLine,directiveType))
 						{
-							directiveValues=strLine.replaceAll("( +)|( *, *)", "@@").replaceAll("\"", "").split("@@");
+							directiveValues=strLine.replaceAll("(\\s+)|(\\s*,\\s*)", "@@").replaceAll("\"", "").split("@@");
 							for(int k=1; k<directiveValues.length; k++)
 							{
 								addDirective = addDirective + " " + directiveValues[k];
