@@ -119,7 +119,7 @@ public class EnclosureParser extends Parser {
 				strLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(lines[i].getLine()));
 								
 				if(i==0) {
-					String enclosureValues[]=strLine.replaceAll("\"|>|<", "").trim().replaceAll(" +|,", "@@").split("@@");
+					String enclosureValues[]=strLine.replaceAll("\"|>|<", "").trim().replaceAll("\\s+|,", "@@").split("@@");
 					enclosure.setType(enclosureValues[0]);
 					StringBuffer enclosureValue=new StringBuffer();
 					for(int j=1;j<enclosureValues.length; j++)
@@ -154,7 +154,7 @@ public class EnclosureParser extends Parser {
 					}
 					else if(!isCommentMatch(strLine) && !strLine.equals("") && !isCloseEnclosureMatch(strLine))
 					{
-						String directiveValues[]=strLine.replaceAll(" +|,", "@@").replaceAll("\"", "").split("@@");
+						String directiveValues[]=strLine.replaceAll("\\s+|,", "@@").replaceAll("\"", "").split("@@");
 						Directive directive=new Directive(directiveValues[0]);
 						for(int j=1; j<directiveValues.length; j++)
 						{
@@ -197,8 +197,8 @@ public class EnclosureParser extends Parser {
 				DataInputStream in = new DataInputStream(fstream);
 				BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		
-				Pattern enclosurePattern=Pattern.compile("< *" + enclosureTypeRegex + " *" + valueRegex + " *>", Pattern.CASE_INSENSITIVE);
-				Pattern closeEnclosurePattern=Pattern.compile("</ *" + enclosureTypeRegex + ".*>", Pattern.CASE_INSENSITIVE);
+				Pattern enclosurePattern=Pattern.compile("<\\s*" + enclosureTypeRegex + " *" + valueRegex + "\\s*>", Pattern.CASE_INSENSITIVE);
+				Pattern closeEnclosurePattern=Pattern.compile("</\\s*" + enclosureTypeRegex + ".*>", Pattern.CASE_INSENSITIVE);
 			
 				String strLine;
 				String cmpLine;

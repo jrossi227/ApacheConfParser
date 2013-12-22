@@ -147,7 +147,7 @@ public class Parser {
 	 * @return a boolean indicating if the line is a comment.
 	 */
 	public static boolean isCommentMatch(String line) {
-		Pattern commentPattern=Pattern.compile("^ *#");
+		Pattern commentPattern=Pattern.compile("^\\s*#");
 		return commentPattern.matcher(line).find(); 
 	}
 	
@@ -159,7 +159,7 @@ public class Parser {
 	 * @return
 	 */
 	protected static boolean isDirectiveMatch(String line, String directiveType) {
-		Pattern directivePattern=Pattern.compile("^ *" +directiveType + " +", Pattern.CASE_INSENSITIVE);	
+		Pattern directivePattern=Pattern.compile("^\\s*" +directiveType + " +", Pattern.CASE_INSENSITIVE);	
 		return directivePattern.matcher(line).find(); 
 	}
 	
@@ -173,7 +173,7 @@ public class Parser {
 	 * @return a boolean indicating if the line matches an IfModule Open Negation
 	 */
 	protected static boolean isIfModuleOpenNegateMatch(String line) {
-		Pattern ifModuleOpenNegatePattern=Pattern.compile("< *ifmodule.*!.*>", Pattern.CASE_INSENSITIVE);
+		Pattern ifModuleOpenNegatePattern=Pattern.compile("<\\s*ifmodule.*!.*>", Pattern.CASE_INSENSITIVE);
 		return ifModuleOpenNegatePattern.matcher(line).find(); 
 	}
 	
@@ -187,7 +187,7 @@ public class Parser {
 	 * @return a boolean indicating if the line matches an IfModule Open Declaration
 	 */
 	protected static boolean isIfModuleOpenMatch(String line) {
-		Pattern ifModuleOpenPattern=Pattern.compile("< *ifmodule.*>", Pattern.CASE_INSENSITIVE);
+		Pattern ifModuleOpenPattern=Pattern.compile("<\\s*ifmodule.*>", Pattern.CASE_INSENSITIVE);
 		return ifModuleOpenPattern.matcher(line).find(); 
 	}
 	
@@ -213,7 +213,7 @@ public class Parser {
 	 * @return a boolean indicating if the line matches the enclosure.
 	 */
 	protected static boolean isEnclosureTypeMatch(String line, String enclosureType) {
-		Pattern enclosurePattern=Pattern.compile("< *" + enclosureType + ".*>", Pattern.CASE_INSENSITIVE);
+		Pattern enclosurePattern=Pattern.compile("<\\s*" + enclosureType + ".*>", Pattern.CASE_INSENSITIVE);
 		return enclosurePattern.matcher(line).find(); 
 	}
 	
@@ -225,7 +225,7 @@ public class Parser {
 	 * @return a boolean indicating if the line matches the closing enclosure type.
 	 */
 	protected static boolean isCloseEnclosureTypeMatch(String line, String enclosureType) {
-		Pattern closeEnclosurePattern=Pattern.compile("</ *" + enclosureType + ".*>", Pattern.CASE_INSENSITIVE);
+		Pattern closeEnclosurePattern=Pattern.compile("</\\s*" + enclosureType + ".*>", Pattern.CASE_INSENSITIVE);
 		return closeEnclosurePattern.matcher(line).find(); 
 	}
 	
@@ -236,7 +236,7 @@ public class Parser {
 	 * @return a boolean indicating if the line matches the enclosure format.
 	 */
 	protected static boolean isEnclosureMatch(String line) {
-		Pattern enclosurePattern=Pattern.compile("< *[^/].*>", Pattern.CASE_INSENSITIVE);
+		Pattern enclosurePattern=Pattern.compile("<\\s*[^/].*>", Pattern.CASE_INSENSITIVE);
 		return enclosurePattern.matcher(line).find(); 
 	}
 	
