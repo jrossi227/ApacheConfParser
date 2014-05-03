@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -424,6 +425,8 @@ public class Parser {
 		files.add(confFile);
 		
 		Utils.removeDuplicates(files);
+		
+		Collections.sort(files);
 		
 		return files;
 		
