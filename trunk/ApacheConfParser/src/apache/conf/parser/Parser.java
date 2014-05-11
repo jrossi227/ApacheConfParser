@@ -426,8 +426,6 @@ public class Parser {
 		
 		Utils.removeDuplicates(files);
 		
-		Collections.sort(files);
-		
 		return files;
 		
 	}
