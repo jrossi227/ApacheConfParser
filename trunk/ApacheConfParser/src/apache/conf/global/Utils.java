@@ -326,16 +326,15 @@ public class Utils
 	  
 		try
 		{
-			if(fileMod.isDirectory()) 
-			{
+			fileMod.setReadable(true,false);
+			fileMod.setWritable(true,false);
+			fileMod.setExecutable(true,false);
+			
+			if(!isWindows()) {
 				String command[]={"chmod", "777", fileMod.getAbsolutePath()};
 				Utils.RunProcessWithoutOutput(command);
 			}
-			else
-			{
-				String command[]={"chmod", "777", fileMod.getAbsolutePath()};
-				Utils.RunProcessWithoutOutput(command);
-			}
+			
 		}
 		catch(Exception e)
 		{
@@ -351,5 +350,9 @@ public class Utils
 	  
 	public static boolean isWindows() {
 		return (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0);
+	}
+	
+	public static double getJavaVersion() {
+		return Double.parseDouble(System.getProperty("java.specification.version"));
 	}
 }
