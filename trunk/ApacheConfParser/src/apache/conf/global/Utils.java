@@ -2,12 +2,10 @@ package apache.conf.global;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -18,6 +16,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 
 import apache.conf.parser.File;
 
@@ -33,15 +34,7 @@ public class Utils
 	 */
 	public static String readFileAsString(File file, Charset charset) throws java.io.IOException
 	{
-		StringBuffer fileData = new StringBuffer(1000);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),charset));
-		char[] buf = new char[1024];
-		int numRead=0;
-		while((numRead=reader.read(buf)) != -1){
-			fileData.append(buf, 0, numRead);
-		}
-		reader.close();
-		return fileData.toString();
+		return FileUtils.readFileToString(file, charset);
 	}
 	
 	/**
@@ -55,15 +48,7 @@ public class Utils
 	{
 		try
 		{
-			InputStream in = new FileInputStream(source);
-			OutputStream out = new FileOutputStream(destination);
-			byte[] buf = new byte[1024];
-		 	int len;
-		 	while ((len = in.read(buf)) > 0) {
-		 	   out.write(buf, 0, len);
-		 	}
-		 	in.close();
-		 	out.close();
+			FileUtils.copyFile(new File(source), new File(destination));
 		 	
 		 	Utils.setPermissions(destination);
 		 	
@@ -86,13 +71,9 @@ public class Utils
 	 */
 	public static void moveFile(String source, String destination) throws Exception
 	{
-		boolean copied=Utils.copyFile(source, destination);
-		if(!copied)
-			throw new Exception("Unable to copy file");
-			
-		boolean delete=(new File(source)).delete();
-		if(!delete)
-			throw new Exception("Unable to delete file");
+		FileUtils.moveFile(new File(source), new File(destination));
+		
+		Utils.setPermissions(destination);
 	}
 	 
 	/**
@@ -103,28 +84,19 @@ public class Utils
 	 * @throws InterruptedException 
 	 * @throws IOException 
 	 */
-	public static void copyDirectory(File srcDir, File dstDir) throws IOException, InterruptedException 
+	public static void copyDirectory(File srcDir, File destDir) throws IOException, InterruptedException 
 	{
 		if (srcDir.isDirectory()) 
 		{
-			if (!dstDir.exists()) 
-		    {
-				dstDir.mkdir();
-				
-				Utils.setPermissions(dstDir.getAbsolutePath());
-		    }
-
-		    String[] children = srcDir.list();
-		    for (int i=0; i<children.length; i++) 
-		    {
-		       copyDirectory(new File(srcDir, children[i]), new File(dstDir, children[i]));
-		    }
+			FileUtils.copyDirectory(srcDir, destDir);
 		} 
 		else 
 		{
 		    // This method is implemented in Copying a File
-			copyFile(srcDir.getAbsolutePath(), dstDir.getAbsolutePath());
+			copyFile(srcDir.getAbsolutePath(), destDir.getAbsolutePath());
 		} 
+		
+		Utils.setPermissions(destDir.getAbsolutePath());
 	}
 	
 	/**
@@ -135,22 +107,14 @@ public class Utils
 	 */
 	public static boolean deleteDirectory(File path) 
 	{
-		if( path.exists() ) 
-		{
-		   java.io.File[] files = path.listFiles();
-		   for(int i=0; i<files.length; i++) 
-		   {
-		      if(files[i].isDirectory()) 
-		      {
-		         deleteDirectory(new File(files[i]));
-		      }
-		      else 
-		      {
-		        files[i].delete();
-		      }
-		   }
+		try {
+			FileUtils.deleteDirectory(path);
+		} catch (IOException e) {
+			return false;
 		}
-		return( path.delete() );
+		
+		return true;
+		
 	}
 	 
 	/**
@@ -161,10 +125,11 @@ public class Utils
 	 * @throws InterruptedException 
 	 * @throws IOException 
 	 */
-	public static void moveDirectory(File srcDir, File dstDir) throws IOException, InterruptedException
+	public static void moveDirectory(File srcDir, File destDir) throws IOException, InterruptedException
 	{
-		copyDirectory(srcDir,dstDir);
-		deleteDirectory(srcDir);
+		FileUtils.moveDirectory(srcDir, destDir);
+		
+		Utils.setPermissions(destDir.getAbsolutePath());
 	}
 	 
 	/**
@@ -178,19 +143,37 @@ public class Utils
 	 */
 	public static String[] getFileList(String directory) throws IOException
 	{
-		// Breadth first search uses Queue data structure
+		return getFileList(directory,"^(.*)$");
+	}
+	 
+	/**
+	 * Appends a list of all files contained in a directory. 
+	 * This search is recursive and all child directories will be parsed.
+	 * This method does not return directories.
+	 * 
+	 * @param directory - The directory to parse.
+	 * @param fileNameRegex - a regex used to match against filenames 
+	 * @return A list of all files contained in the directory and any sub directories.
+	 * @throws IOException
+	 */
+	public static String[] getFileList(String directory, String fileNameRegex) throws IOException
+	{
+		//Breadth first search
+		
 		Queue <String>queue = new LinkedList<String>();
 		queue.add(directory);
 		
 		ArrayList <String>fileList = new ArrayList<String>();
 		while (!queue.isEmpty()) {
 			File currentDirectory = new File((String) queue.remove());
-			String children[]=currentDirectory.list();
+			
+			FileFilter fileFilter = new RegexFileFilter(fileNameRegex);
+			java.io.File children[]=currentDirectory.listFiles(fileFilter);
 			
 			File currFile;
-			for(int i=0; i<children.length; i++)
+			for(java.io.File child : children)
 			{
-				currFile=new File(currentDirectory, children[i]);
+				currFile=new File(currentDirectory, child.getName());
 				if(currFile.isDirectory())
 				{
 					queue.add(currFile.getAbsolutePath());
@@ -200,11 +183,10 @@ public class Utils
 					fileList.add(currFile.getAbsolutePath());
 				}
 			}
-		}
-		
-		return fileList.toArray(new String[fileList.size()]);
+		}	
+		return fileList.toArray(new String[fileList.size()]);		
 	}
-	  
+	
 	/**
 	   * Utilitiy used to remove duplicates from a list.
 	   * 
