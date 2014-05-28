@@ -44,11 +44,11 @@ public class Utils
 	 * @param destination - the absolute path to the destination file.
 	 * @return a boolean indicating if the file was successfully copied.
 	 */
-	public static boolean copyFile(String source, String destination)
+	public static boolean copyFile(File source, File destination)
 	{
 		try
 		{
-			FileUtils.copyFile(new File(source), new File(destination));
+			FileUtils.copyFile(source, destination);
 		 	
 		 	Utils.setPermissions(destination);
 		 	
@@ -56,8 +56,7 @@ public class Utils
 		}
 		catch(Exception e)
 		{
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -67,13 +66,22 @@ public class Utils
 	 * 
 	 * @param source - The absolute path to the source file.
 	 * @param destination - The absolute path to the destination file.
+	 * @return a boolean indicating if the file was successfully moved.
 	 * @throws Exception if the file can't be moved.
 	 */
-	public static void moveFile(String source, String destination) throws Exception
+	public static boolean moveFile(File source, File destination)
 	{
-		FileUtils.moveFile(new File(source), new File(destination));
+		try {
+			FileUtils.moveFile(source, destination);
+			
+			Utils.setPermissions(destination);
+			
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		Utils.setPermissions(destination);
+		return false;
 	}
 	 
 	/**
@@ -82,21 +90,21 @@ public class Utils
 	 * @param srcDir - The source directory.
 	 * @param dstDir - The destination directory.
 	 * @throws InterruptedException 
+	 * @return a boolean indicating if the directory was successfully copied.
 	 * @throws IOException 
 	 */
-	public static void copyDirectory(File srcDir, File destDir) throws IOException, InterruptedException 
+	public static boolean copyDirectory(File srcDir, File destDir) 
 	{
-		if (srcDir.isDirectory()) 
-		{
-			FileUtils.copyDirectory(srcDir, destDir);
-		} 
-		else 
-		{
-		    // This method is implemented in Copying a File
-			copyFile(srcDir.getAbsolutePath(), destDir.getAbsolutePath());
-		} 
 		
-		Utils.setPermissions(destDir.getAbsolutePath());
+		try {
+			FileUtils.copyDirectory(srcDir, destDir); 
+			Utils.setPermissions(destDir);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -122,14 +130,22 @@ public class Utils
 	 * 
 	 * @param srcDir - The source directory to move.
 	 * @param dstDir - The destination directory.
+	 * @return a boolean indicating if the directory was successfully moved.
 	 * @throws InterruptedException 
 	 * @throws IOException 
 	 */
-	public static void moveDirectory(File srcDir, File destDir) throws IOException, InterruptedException
+	public static boolean moveDirectory(File srcDir, File destDir)
 	{
-		FileUtils.moveDirectory(srcDir, destDir);
+		try {	
+			FileUtils.moveDirectory(srcDir, destDir);
 		
-		Utils.setPermissions(destDir.getAbsolutePath());
+			Utils.setPermissions(destDir);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	 
 	/**
@@ -141,7 +157,7 @@ public class Utils
 	 * @return A list of all files contained in the directory and any sub directories.
 	 * @throws IOException
 	 */
-	public static String[] getFileList(String directory) throws IOException
+	public static String[] getFileList(File directory) throws IOException
 	{
 		return getFileList(directory,"^(.*)$");
 	}
@@ -156,16 +172,16 @@ public class Utils
 	 * @return A list of all files contained in the directory and any sub directories.
 	 * @throws IOException
 	 */
-	public static String[] getFileList(String directory, String fileNameRegex) throws IOException
+	public static String[] getFileList(File directory, String fileNameRegex) throws IOException
 	{
 		//Breadth first search
 		
-		Queue <String>queue = new LinkedList<String>();
+		Queue <File>queue = new LinkedList<File>();
 		queue.add(directory);
 		
 		ArrayList <String>fileList = new ArrayList<String>();
 		while (!queue.isEmpty()) {
-			File currentDirectory = new File((String) queue.remove());
+			File currentDirectory = (File) queue.remove();
 			
 			FileFilter fileFilter = new RegexFileFilter(fileNameRegex);
 			java.io.File children[]=currentDirectory.listFiles(fileFilter);
@@ -176,7 +192,7 @@ public class Utils
 				currFile=new File(currentDirectory, child.getName());
 				if(currFile.isDirectory())
 				{
-					queue.add(currFile.getAbsolutePath());
+					queue.add(currFile);
 				}
 				else
 				{
@@ -298,12 +314,9 @@ public class Utils
 	 * @param buffer
   	* @throws IOException
   	*/
-	public static void writeStringBufferToFile(String file, StringBuffer buffer, Charset charset) throws IOException
+	public static void writeStringBufferToFile(File file, StringBuffer buffer, Charset charset) throws IOException
 	{
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),charset)); 
-        out.write(buffer.toString());
-        //Close the output stream
-        out.close();
+		FileUtils.writeStringToFile(file, buffer.toString(), charset);
 	}
   
 	/**
@@ -313,18 +326,16 @@ public class Utils
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static void setPermissions(String file)
-	{
-		File fileMod=new File(file);
-	  
+	public static void setPermissions(File file)
+	{	  
 		try
 		{
-			fileMod.setReadable(true,false);
-			fileMod.setWritable(true,false);
-			fileMod.setExecutable(true,false);
+			file.setReadable(true,false);
+			file.setWritable(true,false);
+			file.setExecutable(true,false);
 			
 			if(!isWindows()) {
-				String command[]={"chmod", "777", fileMod.getAbsolutePath()};
+				String command[]={"chmod", "777", file.getAbsolutePath()};
 				Utils.RunProcessWithoutOutput(command);
 			}
 			
