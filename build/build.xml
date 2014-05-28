@@ -41,6 +41,7 @@
         </manifestclasspath>
 
         <jar destfile="${jar.file}" basedir="${class.dir}">
+        	<zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
             <manifest>
                 <attribute name="Main-Class" value="${main-class}"/>
                 <attribute name="Class-Path" value="${manifest.classpath}"/>
