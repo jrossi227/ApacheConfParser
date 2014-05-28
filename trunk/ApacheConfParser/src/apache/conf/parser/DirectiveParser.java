@@ -212,7 +212,7 @@ public class DirectiveParser extends Parser {
 		}
 		
 		if(found) {
-			Utils.writeStringBufferToFile(foundFile, fileText, Charset.defaultCharset());
+			Utils.writeStringBufferToFile(new File(foundFile), fileText, Charset.defaultCharset());
 		}
 		
 		return found;
@@ -328,7 +328,7 @@ public class DirectiveParser extends Parser {
 	    
 		File fileOld = new File(file);
 		
-		Utils.moveFile(fileNew.getAbsolutePath(), fileOld.getAbsolutePath()); 
+		Utils.moveFile(fileNew, fileOld); 
 	}
 	
 	/**
@@ -400,6 +400,6 @@ public class DirectiveParser extends Parser {
 	    
 		File fileOld = new File(file);
 		
-		Utils.moveFile(fileNew.getAbsolutePath(), fileOld.getAbsolutePath()); 
+		Utils.moveFile(fileNew, fileOld); 
 	}
 }

@@ -238,7 +238,7 @@ public class EnclosureParser extends Parser {
 				in.close();
 				
 				if(found) {
-					Utils.writeStringBufferToFile(includedFiles[i], fileString, Charset.defaultCharset());
+					Utils.writeStringBufferToFile(new File(includedFiles[i]), fileString, Charset.defaultCharset());
 				}
 				
 			}	
