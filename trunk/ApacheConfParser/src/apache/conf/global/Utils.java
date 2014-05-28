@@ -14,6 +14,8 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,31 +169,40 @@ public class Utils
 	 
 	/**
 	 * Appends a list of all files contained in a directory. 
-	 * This search is recursive and all child direcotries will be parsed.
+	 * This search is recursive and all child directories will be parsed.
 	 * This method does not return directories.
 	 * 
 	 * @param directory - The directory to parse. 
-	 * @param recursiveFiles - A list of all files contained in the direcory will be appended to this parameter.
+	 * @return A list of all files contained in the directory and any sub directories.
 	 * @throws IOException
 	 */
-	public static void getFileList(String directory, ArrayList<String> recursiveFiles) throws IOException
+	public static String[] getFileList(String directory) throws IOException
 	{
-		File currentDirectory = new File(directory);
-		String children[]=currentDirectory.list();
-		File currFile;
-		for(int i=0; i<children.length; i++)
-		{
-			currFile=new File(directory, children[i]);
-			if(currFile.isDirectory())
+		// Breadth first search uses Queue data structure
+		Queue <String>queue = new LinkedList<String>();
+		queue.add(directory);
+		
+		ArrayList <String>fileList = new ArrayList<String>();
+		while (!queue.isEmpty()) {
+			File currentDirectory = new File((String) queue.remove());
+			String children[]=currentDirectory.list();
+			
+			File currFile;
+			for(int i=0; i<children.length; i++)
 			{
-				getFileList(currFile.getAbsolutePath(), recursiveFiles);
-			}
-			else
-			{
-				if(recursiveFiles.indexOf(currFile.getAbsolutePath())==-1)
-					recursiveFiles.add(currFile.getAbsolutePath());
+				currFile=new File(currentDirectory, children[i]);
+				if(currFile.isDirectory())
+				{
+					queue.add(currFile.getAbsolutePath());
+				}
+				else
+				{
+					fileList.add(currFile.getAbsolutePath());
+				}
 			}
 		}
+		
+		return fileList.toArray(new String[fileList.size()]);
 	}
 	  
 	/**
