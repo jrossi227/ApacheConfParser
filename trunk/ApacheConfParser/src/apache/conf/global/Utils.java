@@ -1,12 +1,9 @@
 package apache.conf.global;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -72,6 +69,11 @@ public class Utils
 	public static boolean moveFile(File source, File destination)
 	{
 		try {
+			
+			if(destination.exists()) {
+				FileUtils.forceDelete(destination);
+			}
+			
 			FileUtils.moveFile(source, destination);
 			
 			Utils.setPermissions(destination);
@@ -137,6 +139,10 @@ public class Utils
 	public static boolean moveDirectory(File srcDir, File destDir)
 	{
 		try {	
+			if(destDir.exists()) {
+				FileUtils.deleteDirectory(destDir);
+			}
+			
 			FileUtils.moveDirectory(srcDir, destDir);
 		
 			Utils.setPermissions(destDir);
