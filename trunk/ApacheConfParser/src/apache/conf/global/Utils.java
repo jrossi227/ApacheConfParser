@@ -186,11 +186,11 @@ public class Utils
 		queue.add(directory);
 		
 		ArrayList <String>fileList = new ArrayList<String>();
+		FileFilter fileFilter = new RegexFileFilter(fileNameRegex);
 		while (!queue.isEmpty()) {
 			File currentDirectory = (File) queue.remove();
 			
-			FileFilter fileFilter = new RegexFileFilter(fileNameRegex);
-			java.io.File children[]=currentDirectory.listFiles(fileFilter);
+			java.io.File children[]=currentDirectory.listFiles();
 			
 			File currFile;
 			for(java.io.File child : children)
@@ -200,8 +200,7 @@ public class Utils
 				{
 					queue.add(currFile);
 				}
-				else
-				{
+				if(currFile.isFile() && fileFilter.accept(currFile)) {
 					fileList.add(currFile.getAbsolutePath());
 				}
 			}
