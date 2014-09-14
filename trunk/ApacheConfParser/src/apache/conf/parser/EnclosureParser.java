@@ -53,11 +53,13 @@ public class EnclosureParser extends Parser {
 		
 		String includedFiles[]= getActiveConfFileList();
 		
+		File file;
 		for(int i=0; i<includedFiles.length; i++)
 		{	
-			if((new File(includedFiles[i]).exists()))
+			file = new File(includedFiles[i]);
+			if(file.exists())
 			{
-				ParsableLine lines[] = getParsableLines(new File(includedFiles[i]));
+				ParsableLine lines[] = getParsableLines(file);
 				
 				String strLine;
 				boolean insideEnclosure = false;
@@ -87,7 +89,7 @@ public class EnclosureParser extends Parser {
 							
 								if(treeCount==0) {
 									insideEnclosure=false;
-									enclosures.add(parseEnclosure(enclosureText.toString(), defines));
+									enclosures.add(parseEnclosure(file, enclosureText.toString(), defines));
 									enclosureText.delete(0, enclosureText.length());
 								}	
 							}
@@ -100,7 +102,7 @@ public class EnclosureParser extends Parser {
 		return enclosures.toArray(new Enclosure[enclosures.size()]);
 	}
 	
-	private Enclosure parseEnclosure (String enclosureText, Define defines[]) throws Exception {
+	private Enclosure parseEnclosure (File file, String enclosureText, Define defines[]) throws Exception {
 				
 		//read the text line by line
 		//if a new enclosure starts parse all the text and call this function recursively
@@ -127,6 +129,7 @@ public class EnclosureParser extends Parser {
 						enclosureValue.append(enclosureValues[j] + " ");
 					}
 					enclosure.setValue(enclosureValue.toString().trim());
+					enclosure.setFile(file);
 				} 
 				else
 				{	
@@ -147,7 +150,7 @@ public class EnclosureParser extends Parser {
 						
 							if(treeCount==0) {
 								insideEnclosure=false;
-								enclosure.addEnclosure(parseEnclosure(subEnclosureText.toString(), defines));
+								enclosure.addEnclosure(parseEnclosure(file, subEnclosureText.toString(), defines));
 								subEnclosureText.delete(0, enclosureText.length());
 							}	
 						}
