@@ -30,6 +30,7 @@ import apache.conf.global.Const;
 
 public class Enclosure
 {	
+	private File file;
 	private String type;
 	private String value;
 	private ArrayList<Directive> directives;
@@ -37,42 +38,52 @@ public class Enclosure
 	
 	public Enclosure()
 	{
+		this.file=null;
 		this.type="";
 		this.value="";
 		directives= new ArrayList<Directive>();
 		this.enclosures=new ArrayList<Enclosure>();
 	}
 	
-	public Enclosure(String type)
+	public Enclosure(File file, String type)
 	{
+		this.file=file;
 		this.type=type;
 		this.value="";
 		directives= new ArrayList<Directive>();
 		this.enclosures=new ArrayList<Enclosure>();
 	}
 	
-	public Enclosure(String type, String value)
+	public Enclosure(File file, String type, String value)
 	{
+		this.file=file;
 		this.type=type;
 		this.value=value;
 		directives= new ArrayList<Directive>();
 		this.enclosures=new ArrayList<Enclosure>();
 	}
 	
-	public Enclosure(String type, String value, Directive directives[])
+	public Enclosure(File file, String type, String value, Directive directives[])
 	{
+		this.file=file;
 		this.type=type;
 		this.value=value;
 		this.directives=(ArrayList<Directive>) Arrays.asList(directives);
 		this.enclosures=new ArrayList<Enclosure>();
 	}
 	
-	public Enclosure(String type, String value, Directive directives[], Enclosure enclosures[])
+	public Enclosure(File file, String type, String value, Directive directives[], Enclosure enclosures[])
 	{
+		this.file=file;
 		this.type=type;
 		this.value=value;
 		this.directives=(ArrayList<Directive>) Arrays.asList(directives);
 		this.enclosures=(ArrayList<Enclosure>) Arrays.asList(enclosures);
+	}
+	
+	public void setFile(File file)
+	{
+		this.file=file;
 	}
 	
 	public void setType(String type)
@@ -92,6 +103,11 @@ public class Enclosure
 	
 	public void addEnclosure(Enclosure enclosure) {
 		this.enclosures.add(enclosure);
+	}
+	
+	public File getFile()
+	{
+		return file;
 	}
 	
 	public String getType()
