@@ -108,7 +108,7 @@ public class Main {
 			if(option.equals("-d")) {
 				DirectiveParser parser = new DirectiveParser(rootConfFile, serverRoot, staticParser.getStaticModules(), sharedParser.getSharedModules());
 				
-				Directive directives[] = parser.getDirective(directiveName);
+				Directive directives[] = parser.getDirective(directiveName, true);
 				for(int i=0; i<directives.length; i++) {
 					results += directives[i].toString() + "\n";
 				}
@@ -117,7 +117,7 @@ public class Main {
 			if(option.equals("-e")) {
 				EnclosureParser parser = new EnclosureParser(rootConfFile, serverRoot, staticParser.getStaticModules(), sharedParser.getSharedModules());
 				
-				Enclosure enclosures[] = parser.getEnclosure(enclosureName);
+				Enclosure enclosures[] = parser.getEnclosure(enclosureName, true);
 				for(int i=0; i<enclosures.length; i++) {
 					results += enclosures[i].toString() + "\n";
 				}
@@ -126,7 +126,7 @@ public class Main {
 			if(option.equals("-ed")) {
 				EnclosureParser parser = new EnclosureParser(rootConfFile, serverRoot, staticParser.getStaticModules(), sharedParser.getSharedModules());
 				
-				Enclosure enclosures[] = parser.getEnclosure(enclosureName);
+				Enclosure enclosures[] = parser.getEnclosure(enclosureName, true);
 				for(int i=0; i<enclosures.length; i++) {
 					Directive directives[] = enclosures[i].getDirectives();
 					for(int j=0; j<directives.length; j++) {
