@@ -43,10 +43,11 @@ public class DirectiveParser extends Parser {
 	 * The function will return an array with values "80" and "443 https".
 	 * </p>
 	 * @param directiveType The directive name. This is not case sensitive.
+	 * @param includeVHosts flag to indicate whether to include directives in VirtualHosts
 	 * @return gets all of the values of a directive in an array. If one instance of a directive has multiple values then they will be seperated by spaces.
 	 * @throws Exception
 	 */
-	public String[] getDirectiveValue(String directiveType) throws Exception
+	public String[] getDirectiveValue(String directiveType, boolean includeVHosts) throws Exception
 	{
 		Define defines[]; 
 		if(!directiveType.equals(Const.defineDirective))	{	
@@ -65,7 +66,7 @@ public class DirectiveParser extends Parser {
 		{	
 			if((new File(includedFiles[i]).exists()))
 			{					
-				ParsableLine lines[] = getParsableLines(new File(includedFiles[i]));
+				ParsableLine lines[] = getParsableLines(new File(includedFiles[i]), includeVHosts);
 				String strLine = "";
 				for(int j=0; j< lines.length; j++) 
 				{
@@ -99,13 +100,14 @@ public class DirectiveParser extends Parser {
 	 * Parses all active configuration files for the directive specified by directiveType.
 	 * </p>
 	 * @param directiveType The directive name. This is not case sensitive.
+	 * @param includeVHosts flag to indicate whether to include directives in VirtualHosts
 	 * @return all instances of the directive.
 	 * @throws Exception
 	 */
-	public Directive[] getDirective(String directiveType) throws Exception
+	public Directive[] getDirective(String directiveType, boolean includeVHosts) throws Exception
 	{
 		ArrayList<Directive> directives=new ArrayList<Directive>();
-		String values[] = getDirectiveValue(directiveType);
+		String values[] = getDirectiveValue(directiveType, includeVHosts);
 		
 		String directiveValues[];
 		Directive addDirective;
@@ -138,12 +140,13 @@ public class DirectiveParser extends Parser {
 	 * @param directiveType The directive name. This is not case sensitive.
 	 * @param directiveString The directive string to insert.
 	 * @param before a boolean indicating whether the directiveString should be inserted before the first found directive. true for before,false for after.
+	 * @param includeVHosts flag to indicate whether to include directives in VirtualHosts
 	 * @return a boolean indicating if the directive was found.
 	 * @throws Exception
 	 */
-	public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, boolean before) throws Exception
+	public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, boolean before, boolean includeVHosts) throws Exception
 	{
-		return insertDirectiveBeforeOrAfterFirstFound(directiveType, directiveString, ".*", before);
+		return insertDirectiveBeforeOrAfterFirstFound(directiveType, directiveString, ".*", before, includeVHosts);
 	}
 	
 	/**
@@ -160,9 +163,10 @@ public class DirectiveParser extends Parser {
 	 * @param matches A filter that is used to check whether or not the directive matches a certain Regex. This is not case sensitive
 	 * @param before a boolean indicating whether the directiveString should be inserted before the first found directive. true for before,false for after.
 	 * @return a boolean indicating if the directive was found.
+	 * @param includeVHosts flag to indicate whether to include directives in VirtualHosts
 	 * @throws Exception
 	 */
-	public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, String matchesRegex, boolean before) throws Exception
+	public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, String matchesRegex, boolean before, boolean includeVHosts) throws Exception
 	{
 		directiveType="\\b" + directiveType + "\\b";
 		
@@ -177,7 +181,7 @@ public class DirectiveParser extends Parser {
 			{
 				fileText.delete(0, fileText.length());
 				
-				ParsableLine lines[] = getParsableLines(new File(includedFiles[i]));
+				ParsableLine lines[] = getParsableLines(new File(includedFiles[i]), includeVHosts);
 				
 				String strLine = "";
 				String cmpLine = "";
@@ -223,10 +227,11 @@ public class DirectiveParser extends Parser {
 	 * 
 	 * @param directiveType The directive name. This is not case sensitive.
 	 * @param valueContained The value to search for. The value is not case sensitive. Set this to empty if you dont wish to search for a specific value. The value is compared on a "contains" basis.
+	 * @param includeVHosts flag to indicate whether to include directives in VirtualHosts
 	 * @return the first file that matches the directive value combination or null if no file is found.
 	 * @throws Exception 
 	 */
-	public String getDirectiveFile(String directiveType, String valueContained) throws Exception
+	public String getDirectiveFile(String directiveType, String valueContained, boolean includeVHosts) throws Exception
 	{
 		Define defines[]; 
 		if(!directiveType.equals(Const.defineDirective))	{	
@@ -243,7 +248,7 @@ public class DirectiveParser extends Parser {
 		{	
 			if((new File(includedFiles[i]).exists()))
 			{				
-				ParsableLine lines[] = getParsableLines(new File(includedFiles[i]));
+				ParsableLine lines[] = getParsableLines(new File(includedFiles[i]), includeVHosts);
 				
 				String strLine = "";
 				for(int j=0; j< lines.length; j++) 

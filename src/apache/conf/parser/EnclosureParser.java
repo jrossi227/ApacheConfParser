@@ -40,10 +40,11 @@ public class EnclosureParser extends Parser {
 	 * </p>
 	 * 
 	 * @param enclosureType The enclosure name. This is not case sensitive.
+	 * @param includeVHosts flag to indicate whether to include enclosures in VirtualHosts
 	 * @return gets all the matching Enclosures in an array. 
 	 * @throws Exception 
 	 */
-	public Enclosure[] getEnclosure(String enclosureType) throws Exception
+	public Enclosure[] getEnclosure(String enclosureType, boolean includeVHosts) throws Exception
 	{
 		Define defines[] = Define.getAllDefine(new DirectiveParser(rootConfFile, serverRoot, staticModules, sharedModules));
 		
@@ -59,7 +60,7 @@ public class EnclosureParser extends Parser {
 			file = new File(includedFiles[i]);
 			if(file.exists())
 			{
-				ParsableLine lines[] = getParsableLines(file);
+				ParsableLine lines[] = getParsableLines(file, includeVHosts);
 				
 				String strLine;
 				boolean insideEnclosure = false;
@@ -89,7 +90,7 @@ public class EnclosureParser extends Parser {
 							
 								if(treeCount==0) {
 									insideEnclosure=false;
-									enclosures.add(parseEnclosure(file, enclosureText.toString(), defines));
+									enclosures.add(parseEnclosure(file, enclosureText.toString(), defines, includeVHosts));
 									enclosureText.delete(0, enclosureText.length());
 								}	
 							}
@@ -102,7 +103,7 @@ public class EnclosureParser extends Parser {
 		return enclosures.toArray(new Enclosure[enclosures.size()]);
 	}
 	
-	private Enclosure parseEnclosure (File file, String enclosureText, Define defines[]) throws Exception {
+	private Enclosure parseEnclosure (File file, String enclosureText, Define defines[], boolean includeVHosts) throws Exception {
 				
 		//read the text line by line
 		//if a new enclosure starts parse all the text and call this function recursively
@@ -113,7 +114,7 @@ public class EnclosureParser extends Parser {
 		int treeCount=0;
 		
 		StringBuffer subEnclosureText=new StringBuffer();
-		ParsableLine lines[] = getParsableLines(enclosureText);
+		ParsableLine lines[] = getParsableLines(enclosureText, includeVHosts);
 		
 		for(int i=0; i<lines.length; i++) {
 			if(lines[i].isInclude()) 
@@ -150,7 +151,7 @@ public class EnclosureParser extends Parser {
 						
 							if(treeCount==0) {
 								insideEnclosure=false;
-								enclosure.addEnclosure(parseEnclosure(file, subEnclosureText.toString(), defines));
+								enclosure.addEnclosure(parseEnclosure(file, subEnclosureText.toString(), defines, includeVHosts));
 								subEnclosureText.delete(0, enclosureText.length());
 							}	
 						}

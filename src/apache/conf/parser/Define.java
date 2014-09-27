@@ -79,7 +79,7 @@ public class Define {
 		
 		ArrayList<Define> define = new ArrayList<Define>();
 		
-		String defines[]=parser.getDirectiveValue(Const.defineDirective);
+		String defines[]=parser.getDirectiveValue(Const.defineDirective, true);
 		for(int i=0; i<defines.length; i++) {
 			define.add(new Define(defines[i]));
 		}

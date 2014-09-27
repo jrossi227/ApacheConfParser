@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,14 +46,17 @@ public class Parser {
 		this.sharedModules = sharedModules;
 	}
 	
-	protected ParsableLine[] getParsableLines(String parserText) throws Exception 
+	protected ParsableLine[] getParsableLines(String parserText, boolean includeVHosts) throws Exception 
 	{	
 		BufferedReader reader=new BufferedReader(new StringReader(parserText));
 		
 		ArrayList <ParsableLine> lines = new ArrayList<ParsableLine>();
 		
-		boolean skipLine = false;
-		int treeCount=0;
+		boolean skipIfModuleLine = false;
+		int ifModuleTreeCount=0;
+		
+		boolean skipVirtualHostLine = false;
+		
 		String strLine;
 		String cmpLine;
 		while ((strLine = reader.readLine()) != null)   
@@ -70,57 +72,72 @@ public class Parser {
 			 * 
 			 */
 			if(!isCommentMatch(cmpLine) && isIfModuleOpenNegateMatch(cmpLine)) {
-				if(!skipLine) {
+				if(!skipIfModuleLine) {
 					
 					if(isInNegateStaticModules(cmpLine, staticModules) || isInNegateSharedModules(cmpLine, sharedModules)) {
-						skipLine=true;
+						skipIfModuleLine=true;
 					}
 					
-					if(skipLine) {
-						treeCount ++;
+					if(skipIfModuleLine) {
+						ifModuleTreeCount ++;
 					}
 				}
 				else {
 					//we have found a nested iFModule iterate the counter
-					treeCount ++;
+					ifModuleTreeCount ++;
 				}
 			}
 			else if(!isCommentMatch(cmpLine) && isIfModuleOpenMatch(cmpLine))
 			{
 				//Check if were already in a module that isn't loaded
-				if(!skipLine) {
-					skipLine=true;
+				if(!skipIfModuleLine) {
+					skipIfModuleLine=true;
 					
 					if(isInStaticModules(cmpLine, staticModules) || isInSharedModules(cmpLine, sharedModules)) {
-						skipLine=false;
+						skipIfModuleLine=false;
 					}
 				
 					//if the module isnt loaded we dont include whats in the enclosure
-					if(skipLine) {
-						treeCount ++;
+					if(skipIfModuleLine) {
+						ifModuleTreeCount ++;
 					}
 				}
 				else {
 					//we have found a nested iFModule iterate the counter
-					treeCount ++;
+					ifModuleTreeCount ++;
 				}
 			}
 			
-			if(skipLine)
+			/**
+			 * Parse VirtualHost statements to see if we should add the directives
+			 * 
+			 * Example VirtualHost
+			 * <VirtualHost *:80>
+			 * 
+			 */
+			if(!includeVHosts && !isCommentMatch(cmpLine) && isVHostMatch(cmpLine)) {
+				skipVirtualHostLine = true;
+			}
+			
+			if(skipIfModuleLine)
 			{
 				if(!isCommentMatch(cmpLine) && isIfModuleCloseMatch(cmpLine))
 				{
-					treeCount--;
+					ifModuleTreeCount--;
 					
-					if(treeCount==0) {
-						skipLine=false;
+					if(ifModuleTreeCount==0) {
+						skipIfModuleLine=false;
 					}	
 				}
 				
 				lines.add(new ParsableLine(strLine, false));
-			} 
-			else 
-			{
+			} else if(skipVirtualHostLine) {
+				if(!isCommentMatch(cmpLine) && isVHostCloseMatch(cmpLine)) {
+					skipVirtualHostLine = false;
+				}
+				
+				lines.add(new ParsableLine(strLine, false));
+			} else {
 				lines.add(new ParsableLine(strLine, true));
 			}
 		}	
@@ -133,12 +150,13 @@ public class Parser {
 	 * Goes through the target file and marks any lines that will be parsed by the Apache configuration.
 	 * 
 	 * @param file the file to parse
+	 * @param includeVHosts flag to indicate if VirtualHosts should be included in the result
 	 * @return an array of Parsable Lines in the file.
 	 * @throws Exception
 	 */
-	public ParsableLine[] getParsableLines(File file) throws Exception 
+	public ParsableLine[] getParsableLines(File file, boolean includeVHosts) throws Exception 
 	{
-		return getParsableLines(Utils.readFileAsString(file,Charset.defaultCharset()));
+		return getParsableLines(Utils.readFileAsString(file,Charset.defaultCharset()), includeVHosts);
 	}
 	
 	/**
@@ -162,6 +180,34 @@ public class Parser {
 	protected static boolean isDirectiveMatch(String line, String directiveType) {
 		Pattern directivePattern=Pattern.compile("^\\s*" +directiveType + " +", Pattern.CASE_INSENSITIVE);	
 		return directivePattern.matcher(line).find(); 
+	}
+	
+	/**
+	 * Utility used to check if a line matches an VirtualHost <br/>
+	 * <br/>
+	 * Example :<br/>
+	 * &lt;/VirtualHost&gt;
+	 * 
+	 * @param line the line to match against
+	 * @return a boolean indicating if the line matches a VirtualHost
+	 */
+	protected static boolean isVHostMatch(String line) {
+		Pattern virtualHostPattern=Pattern.compile("<\\s*VirtualHost.*>", Pattern.CASE_INSENSITIVE);
+		return virtualHostPattern.matcher(line).find(); 
+	}
+	
+	/**
+	 * Utility used to check for a VirtualHost Close declaration<br/>
+	 * <br/>
+	 * Example :<br/>
+	 * &lt;/VirtualHost&gt;
+	 * 
+	 * @param line the line to match against
+	 * @return a boolean indicating if the line matches an IfModule Close declaration.
+	 */
+	protected static boolean isVHostCloseMatch(String line) {
+		Pattern virtualHostClosePattern=Pattern.compile("</.*VirtualHost.*>", Pattern.CASE_INSENSITIVE);
+		return virtualHostClosePattern.matcher(line).find(); 
 	}
 	
 	/**
@@ -346,7 +392,7 @@ public class Parser {
 		
 		Pattern includePattern=Pattern.compile(Const.includeDirective, Pattern.CASE_INSENSITIVE);
 		
-		ParsableLine lines[] = getParsableLines(new File(confFile));
+		ParsableLine lines[] = getParsableLines(new File(confFile), true);
 		
 		String strLine="";
 		for(int i=0; i<lines.length; i++) 
