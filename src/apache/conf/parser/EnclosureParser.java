@@ -67,6 +67,7 @@ public class EnclosureParser extends Parser {
 				StringBuffer enclosureText=new StringBuffer();
 				
 				int treeCount=0;
+				int lineOfStart=0;
 				for(int j=0; j< lines.length; j++) 
 				{
 					if(lines[j].isInclude()) 
@@ -77,6 +78,10 @@ public class EnclosureParser extends Parser {
 						{
 							insideEnclosure=true;
 							treeCount ++;
+							
+							if(lineOfStart == 0) {
+								lineOfStart = (j+1);
+							}
 						}
 						if(insideEnclosure)
 						{
@@ -90,8 +95,10 @@ public class EnclosureParser extends Parser {
 							
 								if(treeCount==0) {
 									insideEnclosure=false;
-									enclosures.add(parseEnclosure(file, enclosureText.toString(), defines, includeVHosts));
+									enclosures.add(parseEnclosure(file, enclosureText.toString(), defines, includeVHosts, lineOfStart, j+1));
 									enclosureText.delete(0, enclosureText.length());
+									
+									lineOfStart = 0;
 								}	
 							}
 						}
@@ -103,7 +110,7 @@ public class EnclosureParser extends Parser {
 		return enclosures.toArray(new Enclosure[enclosures.size()]);
 	}
 	
-	private Enclosure parseEnclosure (File file, String enclosureText, Define defines[], boolean includeVHosts) throws Exception {
+	private Enclosure parseEnclosure (File file, String enclosureText, Define defines[], boolean includeVHosts, int lineOfStart, int lineOfEnd) throws Exception {
 				
 		//read the text line by line
 		//if a new enclosure starts parse all the text and call this function recursively
@@ -112,6 +119,7 @@ public class EnclosureParser extends Parser {
 		boolean insideEnclosure=false;
 		
 		int treeCount=0;
+		int subLineOfStart = 0;
 		
 		StringBuffer subEnclosureText=new StringBuffer();
 		ParsableLine lines[] = getParsableLines(enclosureText, includeVHosts);
@@ -130,6 +138,8 @@ public class EnclosureParser extends Parser {
 						enclosureValue.append(enclosureValues[j] + " ");
 					}
 					enclosure.setValue(enclosureValue.toString().trim());
+					enclosure.setLineOfStart(lineOfStart);
+					enclosure.setLineOfEnd(lineOfEnd);
 					enclosure.setFile(file);
 				} 
 				else
@@ -138,6 +148,10 @@ public class EnclosureParser extends Parser {
 					{
 						insideEnclosure=true;
 						treeCount ++;
+						
+						if(subLineOfStart == 0) {
+							subLineOfStart = lineOfStart + i;
+						}
 					}
 					if(insideEnclosure)
 					{
@@ -151,8 +165,10 @@ public class EnclosureParser extends Parser {
 						
 							if(treeCount==0) {
 								insideEnclosure=false;
-								enclosure.addEnclosure(parseEnclosure(file, subEnclosureText.toString(), defines, includeVHosts));
+								enclosure.addEnclosure(parseEnclosure(file, subEnclosureText.toString(), defines, includeVHosts, subLineOfStart, lineOfStart + i));
 								subEnclosureText.delete(0, enclosureText.length());
+								
+								subLineOfStart = 0;
 							}	
 						}
 					}
