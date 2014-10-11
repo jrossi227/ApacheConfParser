@@ -31,6 +31,8 @@ import apache.conf.global.Const;
 public class Enclosure
 {	
 	private File file;
+	private int lineOfStart;
+	private int lineOfEnd;
 	private String type;
 	private String value;
 	private ArrayList<Directive> directives;
@@ -39,42 +41,52 @@ public class Enclosure
 	public Enclosure()
 	{
 		this.file=null;
+		this.lineOfStart = -1;
+		this.lineOfEnd = -1;
 		this.type="";
 		this.value="";
 		directives= new ArrayList<Directive>();
 		this.enclosures=new ArrayList<Enclosure>();
 	}
 	
-	public Enclosure(File file, String type)
-	{
+	public Enclosure(File file, int lineOfStart, int lineOfEnd, String type)
+	{		
 		this.file=file;
+		this.lineOfStart = lineOfStart;
+		this.lineOfEnd = lineOfEnd;
 		this.type=type;
 		this.value="";
 		directives= new ArrayList<Directive>();
 		this.enclosures=new ArrayList<Enclosure>();
 	}
 	
-	public Enclosure(File file, String type, String value)
+	public Enclosure(File file, int lineOfStart, int lineOfEnd, String type, String value)
 	{
 		this.file=file;
+		this.lineOfStart = lineOfStart;
+		this.lineOfEnd = lineOfEnd;
 		this.type=type;
 		this.value=value;
 		directives= new ArrayList<Directive>();
 		this.enclosures=new ArrayList<Enclosure>();
 	}
 	
-	public Enclosure(File file, String type, String value, Directive directives[])
+	public Enclosure(File file, int lineOfStart, int lineOfEnd, String type, String value, Directive directives[])
 	{
 		this.file=file;
+		this.lineOfStart = lineOfStart;
+		this.lineOfEnd = lineOfEnd;
 		this.type=type;
 		this.value=value;
 		this.directives=(ArrayList<Directive>) Arrays.asList(directives);
 		this.enclosures=new ArrayList<Enclosure>();
 	}
 	
-	public Enclosure(File file, String type, String value, Directive directives[], Enclosure enclosures[])
+	public Enclosure(File file, int lineOfStart, int lineOfEnd, String type, String value, Directive directives[], Enclosure enclosures[])
 	{
 		this.file=file;
+		this.lineOfStart = lineOfStart;
+		this.lineOfEnd = lineOfEnd;
 		this.type=type;
 		this.value=value;
 		this.directives=(ArrayList<Directive>) Arrays.asList(directives);
@@ -84,6 +96,14 @@ public class Enclosure
 	public void setFile(File file)
 	{
 		this.file=file;
+	}
+	
+	public void setLineOfStart(int lineOfStart) {
+		this.lineOfStart=lineOfStart;
+	}
+	
+	public void setLineOfEnd(int lineOfEnd) {
+		this.lineOfEnd=lineOfEnd;
 	}
 	
 	public void setType(String type)
@@ -108,6 +128,14 @@ public class Enclosure
 	public File getFile()
 	{
 		return file;
+	}
+	
+	public int getLineOfStart() {
+		return lineOfStart;
+	}
+	
+	public int getLineOfEnd() {
+		return lineOfEnd;
 	}
 	
 	public String getType()
