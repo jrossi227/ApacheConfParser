@@ -9,8 +9,11 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -219,6 +222,20 @@ public class Utils
 		  hs.addAll(a);
 		  a.clear();
 		  a.addAll(hs);
+	  }
+	  
+	  /** List order maintained **/
+	  public static void removeDuplicateWithOrder(ArrayList arlList)
+	  {
+	     Set set = new HashSet();
+	     List newList = new ArrayList();
+	     for (Iterator iter = arlList.iterator(); iter.hasNext();) {
+	        Object element = iter.next();
+	        if (set.add(element))
+	           newList.add(element);
+	     }
+	     arlList.clear();
+	     arlList.addAll(newList);
 	  }
 	  
 	  /**

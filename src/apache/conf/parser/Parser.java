@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ import apache.conf.modules.StaticModule;
  *
  */
 public class Parser {
-			
+				
 	protected String rootConfFile;
 	protected String serverRoot;
 	protected StaticModule staticModules[];
@@ -381,13 +382,17 @@ public class Parser {
 	 */
 	public String[] getActiveConfFileList() throws Exception
 	{		
-		ArrayList<String> recursiveFiles = getActiveConfFileList(rootConfFile);
+		ArrayList<String> recursiveFiles = new ArrayList<String>();
+		getActiveConfFileList(rootConfFile, recursiveFiles);
+		
+		Utils.removeDuplicateWithOrder(recursiveFiles);
 		
 		return recursiveFiles.toArray(new String[recursiveFiles.size()]);
 	}
 	
-	private ArrayList<String> getActiveConfFileList(String confFile) throws Exception
+	private ArrayList<String> getActiveConfFileList(String confFile, ArrayList<String> recursiveFiles) throws Exception
 	{	
+		
 		ArrayList<String> files = new ArrayList<String>();
 		
 		Pattern includePattern=Pattern.compile(Const.includeDirective, Pattern.CASE_INSENSITIVE);
@@ -423,6 +428,9 @@ public class Parser {
 					if(check.isDirectory())
 					{
 						String children[]=check.list();
+						
+						Arrays.sort(children);
+						
 						for(int j=0; j<children.length; j++)
 						{
 							if(!(new File(check.getAbsolutePath(), children[j]).isDirectory()))
@@ -439,6 +447,9 @@ public class Parser {
 						{
 							File parent = new File(check.getParentFile().getAbsolutePath());
 							String children[]=parent.list();
+							
+							Arrays.sort(children);
+							
 							File refFile;
 							for(int j=0; j<children.length; j++)
 							{	
@@ -464,14 +475,12 @@ public class Parser {
 		for (int i=0; i<tempList.length; i++)
 		{
 			if((new File(tempList[i]).exists())) {
-				files.addAll(getActiveConfFileList(tempList[i]));
+				getActiveConfFileList(tempList[i],recursiveFiles);
 			}
 		}
 		
-		files.add(confFile);
-		
-		Utils.removeDuplicates(files);
-		
+		recursiveFiles.add(confFile);
+				
 		return files;
 		
 	}
