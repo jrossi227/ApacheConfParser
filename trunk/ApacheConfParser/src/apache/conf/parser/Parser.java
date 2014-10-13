@@ -390,7 +390,7 @@ public class Parser {
 		return recursiveFiles.toArray(new String[recursiveFiles.size()]);
 	}
 	
-	private ArrayList<String> getActiveConfFileList(String confFile, ArrayList<String> recursiveFiles) throws Exception
+	private void getActiveConfFileList(String confFile, ArrayList<String> recursiveFiles) throws Exception
 	{	
 		
 		ArrayList<String> files = new ArrayList<String>();
@@ -479,9 +479,6 @@ public class Parser {
 			}
 		}
 		
-		recursiveFiles.add(confFile);
-				
-		return files;
-		
+		recursiveFiles.add(confFile);		
 	}
 }
