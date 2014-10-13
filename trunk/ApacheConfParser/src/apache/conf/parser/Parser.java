@@ -471,11 +471,10 @@ public class Parser {
 			}
 		}	
 		
-		String tempList[] = files.toArray(new String[files.size()]);
-		for (int i=0; i<tempList.length; i++)
+		for (int i=0; i<files.size(); i++)
 		{
-			if((new File(tempList[i]).exists())) {
-				getActiveConfFileList(tempList[i],recursiveFiles);
+			if((new File(files.get(i)).exists())) {
+				getActiveConfFileList(files.get(i),recursiveFiles);
 			}
 		}
 		
