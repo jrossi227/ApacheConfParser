@@ -40,10 +40,10 @@ public class Define {
 		value="";
 		
 		String parts[]=directiveValue.replaceAll("\\\\", "/").replaceFirst(" ", "@@").split("@@");
-		if(parts.length > 1) {
+		if(parts.length > 0) {
 			name=parts[0];
 		}
-		if(parts.length > 2) {
+		if(parts.length > 1) {
 			value=parts[1];
 		}
 	}	
