@@ -1,6 +1,9 @@
 package apache.conf.parser;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -374,6 +377,92 @@ public class Parser {
 		return false;
 	}
 	
+	public ParsableLine[] getConfigurationParsableLines(boolean includeVHosts) throws IOException, Exception {
+		return getParsableLines(getConfigurationLines(), includeVHosts);
+	}
+	
+	private ConfigurationLine[] getConfigurationLines() throws IOException {
+		
+		StringBuffer configurationBuffer = new StringBuffer();
+		
+		getConfigurationString(rootConfFile, configurationBuffer);
+		
+		return configurationBuffer.toString();
+	}
+	
+	private void getConfigurationLines(String confFile, StringBuffer configurationBuffer) throws IOException {
+		
+		Pattern includePattern=Pattern.compile(Const.includeDirective, Pattern.CASE_INSENSITIVE);
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(confFile),"UTF-8"));
+		
+		String strLine;
+		while ((strLine = br.readLine()) != null)   
+		{
+			configurationBuffer.append(strLine + Const.newLine);
+			strLine=Utils.sanitizeLineSpaces(strLine);
+			
+			Matcher includeMatcher = includePattern.matcher(strLine); 
+			if(!isCommentMatch(strLine) && includeMatcher.find()) {
+				
+				String file;
+				file=strLine.replaceAll(Const.includeDirective + "\\s+", "").replaceAll("\"", "");
+				
+				//if the filename starts with it is an absolute path, otherwise its a relative path
+				File check;
+				if(file.startsWith("/") || (file.contains(":")) ) {
+					check= new File(file);
+				}	
+				else {
+					check= new File(serverRoot,file);
+				}
+				
+				//check if its a directory, if it is we must include all files in the directory
+				if(check.isDirectory())
+				{
+					String children[]=check.list();
+					
+					Arrays.sort(children);
+					
+					for(int j=0; j<children.length; j++)
+					{
+						if(!(new File(check.getAbsolutePath(), children[j]).isDirectory())) {
+							getConfigurationString(new File(check.getAbsolutePath(),children[j]).getAbsolutePath(), configurationBuffer);
+						}
+					}
+				}
+				else
+				{
+					//check if its wild card here
+					if(file.contains("*"))
+					{
+						File parent = new File(check.getParentFile().getAbsolutePath());
+						String children[]=parent.list();
+						
+						Arrays.sort(children);
+						
+						File refFile;
+						for(int j=0; j<children.length; j++)
+						{	
+							refFile=new File(parent.getAbsolutePath(), children[j]);
+							if(!refFile.isDirectory() && refFile.getName().matches(check.getName().replaceAll("\\.", "\\.").replaceAll("\\*", ".*")))
+							{
+								getConfigurationString(refFile.getAbsolutePath(), configurationBuffer);
+							}
+						}
+					}
+					else 
+					{	
+						getConfigurationString(check.getAbsolutePath(), configurationBuffer);
+					}
+				}
+			}
+			
+		}
+		br.close();
+		
+	}
+	
 	/**
 	 * Gets a list of the configuration files currently included in the apache configuration.
 	 * 
@@ -382,34 +471,21 @@ public class Parser {
 	 */
 	public String[] getActiveConfFileList() throws Exception
 	{		
-		ArrayList<String> recursiveFiles = new ArrayList<String>();
-		getActiveConfFileList(rootConfFile, recursiveFiles);
-		
-		Utils.removeDuplicateWithOrder(recursiveFiles);
-		
-		return recursiveFiles.toArray(new String[recursiveFiles.size()]);
-	}
-	
-	private void getActiveConfFileList(String confFile, ArrayList<String> recursiveFiles) throws Exception
-	{	
+		ParsableLine lines[] = getConfigurationParsableLines(true);
 		
 		ArrayList<String> files = new ArrayList<String>();
+		files.add(rootConfFile);
 		
 		Pattern includePattern=Pattern.compile(Const.includeDirective, Pattern.CASE_INSENSITIVE);
 		
-		ParsableLine lines[] = getParsableLines(new File(confFile), true);
-		
-		String strLine="";
+		String strLine, file, addedFile;
 		for(int i=0; i<lines.length; i++) 
 		{
 			if(lines[i].isInclude()) 
 			{
 				strLine=Utils.sanitizeLineSpaces(lines[i].getLine());
-			
-				Matcher includeMatcher = includePattern.matcher(strLine); 
 				
-				String file;
-				String addedFile;
+				Matcher includeMatcher = includePattern.matcher(strLine); 
 				
 				if(!isCommentMatch(strLine) && includeMatcher.find())
 				{
@@ -470,14 +546,10 @@ public class Parser {
 				}
 			}
 		}	
+				
+		Utils.removeDuplicateWithOrder(files);
 		
-		for (int i=0; i<files.size(); i++)
-		{
-			if((new File(files.get(i)).exists())) {
-				getActiveConfFileList(files.get(i),recursiveFiles);
-			}
-		}
-		
-		recursiveFiles.add(confFile);		
+		return files.toArray(new String[files.size()]);
 	}
+	
 }
