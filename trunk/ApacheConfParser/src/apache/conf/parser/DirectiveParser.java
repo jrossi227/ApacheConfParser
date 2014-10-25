@@ -59,35 +59,27 @@ public class DirectiveParser extends Parser {
 		directiveType="\\b" + directiveType + "\\b";
 		
 		ArrayList<String> directives=new ArrayList<String>();
-		
-		String includedFiles[]= getActiveConfFileList();
-		
-		for(int i=0; i<includedFiles.length; i++)
-		{	
-			if((new File(includedFiles[i]).exists()))
-			{					
-				ParsableLine lines[] = getParsableLines(new File(includedFiles[i]), includeVHosts);
-				String strLine = "";
-				for(int j=0; j< lines.length; j++) 
+				
+		ParsableLine lines[] = getConfigurationParsableLines(includeVHosts);
+		String strLine = "";
+		for(int j=0; j< lines.length; j++) 
+		{
+			if(lines[j].isInclude()) 
+			{	
+				strLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(lines[j].getLine()));
+				
+				String directiveValues[];
+				String addDirective="";
+				
+				if(!isCommentMatch(strLine) && isDirectiveMatch(strLine,directiveType))
 				{
-					if(lines[j].isInclude()) 
-					{	
-						strLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(lines[j].getLine()));
-						
-						String directiveValues[];
-						String addDirective="";
-						
-						if(!isCommentMatch(strLine) && isDirectiveMatch(strLine,directiveType))
-						{
-							directiveValues=strLine.replaceAll("(\\s+)|(\\s*,\\s*)", "@@").replaceAll("\"", "").split("@@");
-							for(int k=1; k<directiveValues.length; k++)
-							{
-								addDirective = addDirective + " " + directiveValues[k];
-							}
-							addDirective=addDirective.trim();
-							directives.add(addDirective);
-						}
+					directiveValues=strLine.replaceAll("(\\s+)|(\\s*,\\s*)", "@@").replaceAll("\"", "").split("@@");
+					for(int k=1; k<directiveValues.length; k++)
+					{
+						addDirective = addDirective + " " + directiveValues[k];
 					}
+					addDirective=addDirective.trim();
+					directives.add(addDirective);
 				}
 			}
 		}

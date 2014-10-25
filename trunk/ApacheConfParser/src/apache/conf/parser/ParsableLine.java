@@ -7,20 +7,21 @@ package apache.conf.parser;
  *  </p>
  */
 public class ParsableLine {
-	private String line;
+	ConfigurationLine line;
 	private boolean include;
 	
-	public ParsableLine(String line, boolean include) {
+	public ParsableLine(ConfigurationLine line, boolean include) {
 		this.line=line;
 		this.include=include;
 	}
 	
-	public String getLine() {
+	public ConfigurationLine getLine() {
 		return line;
 	}
-	public void setLine(String line) {
+	public void setLine(ConfigurationLine line) {
 		this.line = line;
 	}
+	
 	public boolean isInclude() {
 		return include;
 	}
