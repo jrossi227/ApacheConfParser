@@ -104,17 +104,14 @@ public class Define {
 	
 	public static String replaceDefinesInString(Define defines[], String line)
 	{
-		String newLine=line;
+		String newLine = line;
 		
 		String regex;
 		for(int i=0; i<defines.length; i++) {
 			regex = "\\$\\{ *" + defines[i].getName() + " *\\}";
 			
 			Pattern pattern = Pattern.compile(regex);
-			if(pattern.matcher(line).find()) {
-				newLine=newLine.replaceAll(regex, defines[i].getValue());
-				break;
-			}
+			newLine = pattern.matcher(line).replaceAll(defines[i].getValue());
 		}
 		
 		return newLine;
