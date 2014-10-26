@@ -47,145 +47,114 @@ public class EnclosureParser extends Parser {
 	public Enclosure[] getEnclosure(String enclosureType, boolean includeVHosts) throws Exception
 	{
 		Define defines[] = Define.getAllDefine(new DirectiveParser(rootConfFile, serverRoot, staticModules, sharedModules));
-		
-		String enclosureTypeRegex="\\b" + enclosureType + "\\b";
-		
+				
 		ArrayList<Enclosure> enclosures=new ArrayList<Enclosure>();
 		
-		String includedFiles[]= getActiveConfFileList();
+		ParsableLine lines[] = getConfigurationParsableLines(includeVHosts);
 		
-		File file;
-		for(int i=0; i<includedFiles.length; i++)
-		{	
-			file = new File(includedFiles[i]);
-			if(file.exists())
-			{
-				ParsableLine lines[] = getParsableLines(file, includeVHosts);
+		String strLine;
+		boolean insideEnclosure = false;
+		ArrayList<ParsableLine> parsableLines = new ArrayList<ParsableLine>();
+		
+		int treeCount=0;
+		for(int i=0; i< lines.length; i++) 
+		{
+			if(lines[i].isInclude()) 
+			{	
+				strLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(lines[i].getConfigurationLine().getLine()));
 				
-				String strLine;
-				boolean insideEnclosure = false;
-				StringBuffer enclosureText=new StringBuffer();
-				
-				int treeCount=0;
-				int lineOfStart=0;
-				for(int j=0; j< lines.length; j++) 
+				if(!isCommentMatch(strLine) && isEnclosureTypeMatch(strLine,enclosureType))
 				{
-					if(lines[j].isInclude()) 
-					{	
-						strLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(lines[j].getLine()));
-						
-						if(!isCommentMatch(strLine) && isEnclosureTypeMatch(strLine,enclosureTypeRegex))
-						{
-							insideEnclosure=true;
-							treeCount ++;
-							
-							if(lineOfStart == 0) {
-								lineOfStart = (j+1);
-							}
-						}
-						if(insideEnclosure)
-						{
-							if(!isCommentMatch(strLine) && !strLine.equals("")) {
-								enclosureText.append(strLine + Const.newLine);
-							}
-						
-							if(!isCommentMatch(strLine) &&isCloseEnclosureTypeMatch(strLine,enclosureTypeRegex))
-							{
-								treeCount--;
-							
-								if(treeCount==0) {
-									insideEnclosure=false;
-									enclosures.add(parseEnclosure(file, enclosureText.toString(), defines, includeVHosts, lineOfStart, j+1));
-									enclosureText.delete(0, enclosureText.length());
-									
-									lineOfStart = 0;
-								}	
-							}
-						}
+					insideEnclosure=true;
+					treeCount ++;
+				}
+				if(insideEnclosure)
+				{
+					if(!isCommentMatch(strLine) && !strLine.equals("")) {
+						parsableLines.add(lines[i]);
 					}
-				}	
 				
-			}	
-		}
+					if(!isCommentMatch(strLine) &&isCloseEnclosureTypeMatch(strLine,enclosureType))
+					{
+						treeCount--;
+					
+						if(treeCount==0) {
+							insideEnclosure=false;
+							enclosures.add(parseEnclosure(parsableLines.toArray(new ParsableLine[parsableLines.size()]), defines, includeVHosts));
+							parsableLines.clear();
+						}	
+					}
+				}
+			}
+		}	
+				
 		return enclosures.toArray(new Enclosure[enclosures.size()]);
 	}
 	
-	private Enclosure parseEnclosure (File file, String enclosureText, Define defines[], boolean includeVHosts, int lineOfStart, int lineOfEnd) throws Exception {
+	private Enclosure parseEnclosure (ParsableLine[] parsableLines, Define defines[], boolean includeVHosts) throws Exception {
 				
-		//read the text line by line
-		//if a new enclosure starts parse all the text and call this function recursively
 		String strLine;
 		Enclosure enclosure=new Enclosure();
 		boolean insideEnclosure=false;
 		
 		int treeCount=0;
-		int subLineOfStart = 0;
 		
-		StringBuffer subEnclosureText=new StringBuffer();
-		ParsableLine lines[] = getParsableLines(enclosureText, includeVHosts);
+		ArrayList<ParsableLine> subParsableLines = new ArrayList<ParsableLine>();
 		
-		for(int i=0; i<lines.length; i++) {
-			if(lines[i].isInclude()) 
-			{	
-				strLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(lines[i].getLine()));
-								
-				if(i==0) {
-					String enclosureValues[]=strLine.replaceAll("\"|>|<", "").trim().replaceAll("\\s+|,", "@@").split("@@");
-					enclosure.setType(enclosureValues[0]);
-					StringBuffer enclosureValue=new StringBuffer();
-					for(int j=1;j<enclosureValues.length; j++)
-					{	
-						enclosureValue.append(enclosureValues[j] + " ");
-					}
-					enclosure.setValue(enclosureValue.toString().trim());
-					enclosure.setLineOfStart(lineOfStart);
-					enclosure.setLineOfEnd(lineOfEnd);
-					enclosure.setFile(file);
-				} 
-				else
+		for(int i=0; i<parsableLines.length; i++) {
+			
+			strLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(parsableLines[i].getConfigurationLine().getLine()));
+							
+			if(i==0) {
+				String enclosureValues[]=strLine.replaceAll("\"|>|<", "").trim().replaceAll("\\s+|,", "@@").split("@@");
+				enclosure.setType(enclosureValues[0]);
+				StringBuffer enclosureValue=new StringBuffer();
+				for(int j=1;j<enclosureValues.length; j++)
 				{	
-					if(!isCommentMatch(strLine) && isEnclosureMatch(strLine))
-					{
-						insideEnclosure=true;
-						treeCount ++;
-						
-						if(subLineOfStart == 0) {
-							subLineOfStart = lineOfStart + i;
-						}
+					enclosureValue.append(enclosureValues[j] + " ");
+				}
+				enclosure.setValue(enclosureValue.toString().trim());
+				enclosure.setLineOfStart(parsableLines[i].getConfigurationLine().getLineNumInFile());
+				enclosure.setLineOfEnd(parsableLines[parsableLines.length -1].getConfigurationLine().getLineNumInFile());
+				enclosure.setFile(new File(parsableLines[i].getConfigurationLine().getFile()));
+			} 
+			else
+			{	
+				if(!isCommentMatch(strLine) && isEnclosureMatch(strLine))
+				{
+					insideEnclosure=true;
+					treeCount ++;
+				}
+				if(insideEnclosure)
+				{
+					if(!isCommentMatch(strLine)) {							
+						subParsableLines.add(parsableLines[i]);
 					}
-					if(insideEnclosure)
+			
+					if(!isCommentMatch(strLine) && isCloseEnclosureMatch(strLine))
 					{
-						if(!isCommentMatch(strLine)) {
-							subEnclosureText.append(strLine + Const.newLine);
-						}
-				
-						if(!isCommentMatch(strLine) && isCloseEnclosureMatch(strLine))
-						{
-							treeCount--;
-						
-							if(treeCount==0) {
-								insideEnclosure=false;
-								enclosure.addEnclosure(parseEnclosure(file, subEnclosureText.toString(), defines, includeVHosts, subLineOfStart, lineOfStart + i));
-								subEnclosureText.delete(0, enclosureText.length());
-								
-								subLineOfStart = 0;
-							}	
-						}
-					}
-					else if(!isCommentMatch(strLine) && !strLine.equals("") && !isCloseEnclosureMatch(strLine))
-					{
-						String directiveValues[]=strLine.replaceAll("\\s+|,", "@@").replaceAll("\"", "").split("@@");
-						Directive directive=new Directive(directiveValues[0]);
-						for(int j=1; j<directiveValues.length; j++)
-						{
-							directive.addValue(directiveValues[j]);
-						}
-						enclosure.addDirective(directive);
+						treeCount--;
+					
+						if(treeCount==0) {
+							insideEnclosure=false;
+							enclosure.addEnclosure(parseEnclosure(subParsableLines.toArray(new ParsableLine[subParsableLines.size()]), defines, includeVHosts));
+							subParsableLines.clear();							
+						}	
 					}
 				}
-			}	
-		}
-				
+				else if(!isCommentMatch(strLine) && !isCloseEnclosureMatch(strLine))
+				{
+					String directiveValues[]=strLine.replaceAll("\\s+|,", "@@").replaceAll("\"", "").split("@@");
+					Directive directive=new Directive(directiveValues[0]);
+					for(int j=1; j<directiveValues.length; j++)
+					{
+						directive.addValue(directiveValues[j]);
+					}
+					enclosure.addDirective(directive);
+				}
+			}
+		}	
+		
 		return enclosure;
 	}
 	
@@ -199,9 +168,7 @@ public class EnclosureParser extends Parser {
 	public void deleteEnclosure(String enclosureType, String valueRegex) throws Exception
 	{
 		Define defines[] = Define.getAllDefine(new DirectiveParser(rootConfFile, serverRoot, staticModules, sharedModules));
-		
-		String enclosureTypeRegex="\\b" + enclosureType + "\\b";
-				
+						
 		String includedFiles[]= getActiveConfFileList();
 				
 		StringBuffer fileString=new StringBuffer();
@@ -217,8 +184,7 @@ public class EnclosureParser extends Parser {
 				DataInputStream in = new DataInputStream(fstream);
 				BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		
-				Pattern enclosurePattern=Pattern.compile("<\\s*" + enclosureTypeRegex + " *" + valueRegex + "\\s*>", Pattern.CASE_INSENSITIVE);
-				Pattern closeEnclosurePattern=Pattern.compile("</\\s*" + enclosureTypeRegex + ".*>", Pattern.CASE_INSENSITIVE);
+				Pattern enclosurePattern=Pattern.compile("<\\s*\\b" + enclosureType + "\\b *" + valueRegex + "\\s*>", Pattern.CASE_INSENSITIVE);
 			
 				String strLine;
 				String cmpLine;
@@ -230,7 +196,7 @@ public class EnclosureParser extends Parser {
 					cmpLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(strLine));
 					
 					boolean enclosureMatch = enclosurePattern.matcher(cmpLine).find();
-					boolean closeEnclosureMatch = closeEnclosurePattern.matcher(cmpLine).find();
+					boolean closeEnclosureMatch = isCloseEnclosureTypeMatch(cmpLine,enclosureType);
 					
 					if(!isCommentMatch(cmpLine)&&enclosureMatch)
 					{
