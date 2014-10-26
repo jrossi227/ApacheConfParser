@@ -1,6 +1,7 @@
 package apache.conf.parser;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import apache.conf.global.Const;
 import apache.conf.global.Utils;
@@ -105,8 +106,15 @@ public class Define {
 	{
 		String newLine=line;
 		
+		String regex;
 		for(int i=0; i<defines.length; i++) {
-			newLine=newLine.replaceAll("\\$\\{ *" + defines[i].getName() + " *\\}", defines[i].getValue());
+			regex = "\\$\\{ *" + defines[i].getName() + " *\\}";
+			
+			Pattern pattern = Pattern.compile(regex);
+			if(pattern.matcher(line).find()) {
+				newLine=newLine.replaceAll(regex, defines[i].getValue());
+				break;
+			}
 		}
 		
 		return newLine;

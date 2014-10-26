@@ -46,7 +46,7 @@ public class EnclosureParser extends Parser {
 	 */
 	public Enclosure[] getEnclosure(String enclosureType, boolean includeVHosts) throws Exception
 	{
-		Define defines[] = Define.getAllDefine(new DirectiveParser(rootConfFile, serverRoot, staticModules, sharedModules));
+		Define defines[] = getAllDefines();	
 				
 		ArrayList<Enclosure> enclosures=new ArrayList<Enclosure>();
 		
@@ -57,11 +57,11 @@ public class EnclosureParser extends Parser {
 		ArrayList<ParsableLine> parsableLines = new ArrayList<ParsableLine>();
 		
 		int treeCount=0;
-		for(int i=0; i< lines.length; i++) 
+		for(ParsableLine line : lines) 
 		{
-			if(lines[i].isInclude()) 
+			if(line.isInclude()) 
 			{	
-				strLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(lines[i].getConfigurationLine().getLine()));
+				strLine = processConfigurationLine(defines, line.getConfigurationLine().getLine());
 				
 				if(!isCommentMatch(strLine) && isEnclosureTypeMatch(strLine,enclosureType))
 				{
@@ -71,7 +71,7 @@ public class EnclosureParser extends Parser {
 				if(insideEnclosure)
 				{
 					if(!isCommentMatch(strLine) && !strLine.equals("")) {
-						parsableLines.add(lines[i]);
+						parsableLines.add(line);
 					}
 				
 					if(!isCommentMatch(strLine) &&isCloseEnclosureTypeMatch(strLine,enclosureType))
@@ -101,11 +101,13 @@ public class EnclosureParser extends Parser {
 		
 		ArrayList<ParsableLine> subParsableLines = new ArrayList<ParsableLine>();
 		
-		for(int i=0; i<parsableLines.length; i++) {
+		int iter = 0;
+		for(ParsableLine parsableLine : parsableLines) {
+			iter ++;				
 			
-			strLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(parsableLines[i].getConfigurationLine().getLine()));
-							
-			if(i==0) {
+			strLine = processConfigurationLine(defines, parsableLine.getConfigurationLine().getLine());
+			
+			if(iter == 1) {
 				String enclosureValues[]=strLine.replaceAll("\"|>|<", "").trim().replaceAll("\\s+|,", "@@").split("@@");
 				enclosure.setType(enclosureValues[0]);
 				StringBuffer enclosureValue=new StringBuffer();
@@ -114,9 +116,9 @@ public class EnclosureParser extends Parser {
 					enclosureValue.append(enclosureValues[j] + " ");
 				}
 				enclosure.setValue(enclosureValue.toString().trim());
-				enclosure.setLineOfStart(parsableLines[i].getConfigurationLine().getLineNumInFile());
+				enclosure.setLineOfStart(parsableLine.getConfigurationLine().getLineNumInFile());
 				enclosure.setLineOfEnd(parsableLines[parsableLines.length -1].getConfigurationLine().getLineNumInFile());
-				enclosure.setFile(new File(parsableLines[i].getConfigurationLine().getFile()));
+				enclosure.setFile(new File(parsableLine.getConfigurationLine().getFile()));
 			} 
 			else
 			{	
@@ -128,7 +130,7 @@ public class EnclosureParser extends Parser {
 				if(insideEnclosure)
 				{
 					if(!isCommentMatch(strLine)) {							
-						subParsableLines.add(parsableLines[i]);
+						subParsableLines.add(parsableLine);
 					}
 			
 					if(!isCommentMatch(strLine) && isCloseEnclosureMatch(strLine))
@@ -167,20 +169,20 @@ public class EnclosureParser extends Parser {
 	 */
 	public void deleteEnclosure(String enclosureType, String valueRegex) throws Exception
 	{
-		Define defines[] = Define.getAllDefine(new DirectiveParser(rootConfFile, serverRoot, staticModules, sharedModules));
-						
+		Define defines[] = getAllDefines();							
+		
 		String includedFiles[]= getActiveConfFileList();
 				
 		StringBuffer fileString=new StringBuffer();
 		boolean found=false;
-		for(int i=0; i<includedFiles.length; i++)
+		for(String includedFile : includedFiles)
 		{	
 			fileString.delete(0, fileString.length());
 			found=false;
 			
-			if((new File(includedFiles[i]).exists()))
+			if((new File(includedFile).exists()))
 			{
-				FileInputStream fstream = new FileInputStream(includedFiles[i]);
+				FileInputStream fstream = new FileInputStream(includedFile);
 				DataInputStream in = new DataInputStream(fstream);
 				BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		
@@ -193,7 +195,7 @@ public class EnclosureParser extends Parser {
 				int treeCount=0;
 				while ((strLine = br.readLine()) != null)   
 				{
-					cmpLine=Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(strLine));
+					cmpLine = processConfigurationLine(defines, strLine);
 					
 					boolean enclosureMatch = enclosurePattern.matcher(cmpLine).find();
 					boolean closeEnclosureMatch = isCloseEnclosureTypeMatch(cmpLine,enclosureType);
@@ -224,7 +226,7 @@ public class EnclosureParser extends Parser {
 				in.close();
 				
 				if(found) {
-					Utils.writeStringBufferToFile(new File(includedFiles[i]), fileString, Charset.defaultCharset());
+					Utils.writeStringBufferToFile(new File(includedFile), fileString, Charset.defaultCharset());
 				}
 				
 			}	
