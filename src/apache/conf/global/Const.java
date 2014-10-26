@@ -13,7 +13,6 @@ public class Const {
 	public final static String sharedModulesType="shared";
 	
 	//Constants to search for apache directives
-	public final static String includeDirective="\\b(?i:Include|IncludeOptional)\\b";
 	public final static String defineDirective="Define";
 	
 }
