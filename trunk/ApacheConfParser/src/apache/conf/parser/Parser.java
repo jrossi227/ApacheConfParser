@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import apache.conf.global.Const;
 import apache.conf.global.Utils;
 import apache.conf.modules.SharedModule;
 import apache.conf.modules.StaticModule;
@@ -184,7 +185,7 @@ public class Parser {
 		return closeEnclosurePattern.matcher(line).find(); 
 	}
 	
-	public static boolean isIncludeMatch(String line) {
+	protected static boolean isIncludeMatch(String line) {
         Pattern includePattern=Pattern.compile("\\b(Include|IncludeOptional)\\b", Pattern.CASE_INSENSITIVE);
         return includePattern.matcher(line).find(); 
     }
@@ -269,7 +270,28 @@ public class Parser {
 		return false;
 	}
 	
-	private ConfigurationLine[] getConfigurationLines(String confFile) throws IOException {
+	protected Define[] getAllDefines() throws Exception {
+		return getAllDefines("");
+	}
+	
+	protected Define[] getAllDefines(String directiveType) throws Exception {
+		Define defines[]; 
+		if(!directiveType.equals(Const.defineDirective))	{	
+			defines = Define.getAllDefine(new DirectiveParser(rootConfFile, serverRoot, staticModules, sharedModules));
+		} else {
+			defines = new Define[0];
+		}
+		
+		return defines;
+	}
+	
+	protected String processConfigurationLine(Define defines[], String line) {
+		
+		return Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(line));
+		
+	}
+	
+	private ConfigurationLine[] getConfigurationLines(String confFile) throws Exception {
         
         ArrayList<ConfigurationLine> configurationLines = new ArrayList<ConfigurationLine>();
         
@@ -278,9 +300,11 @@ public class Parser {
         return configurationLines.toArray(new ConfigurationLine[configurationLines.size()]);
     }
     
-    private void getConfigurationString(String confFile, ArrayList<ConfigurationLine> configurationLines) throws IOException {
+    private void getConfigurationString(String confFile, ArrayList<ConfigurationLine> configurationLines) throws Exception {
         
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(confFile),"UTF-8"));
+    	Define defines[] = getAllDefines(); 
+    	
+    	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(confFile),"UTF-8"));
         
         String strLine;
         int lineNumInFile = 0;
@@ -289,7 +313,8 @@ public class Parser {
             lineNumInFile ++;
             
             configurationLines.add(new ConfigurationLine(strLine, confFile, lineNumInFile));
-            strLine=Utils.sanitizeLineSpaces(strLine);
+            
+            strLine=processConfigurationLine(defines, strLine);
             
             if(!isCommentMatch(strLine) && isIncludeMatch(strLine)) {
                 
@@ -353,8 +378,9 @@ public class Parser {
 	
 	protected ParsableLine[] getParsableLines(ConfigurationLine[] configurationLines, boolean includeVHosts) throws Exception 
     {   
-        
-        ArrayList <ParsableLine> lines = new ArrayList<ParsableLine>();
+		Define defines[] = getAllDefines(); 
+		
+		ArrayList <ParsableLine> lines = new ArrayList<ParsableLine>();
         
         boolean skipIfModuleLine = false;
         int ifModuleTreeCount=0;
@@ -364,7 +390,7 @@ public class Parser {
         String cmpLine;
         for(ConfigurationLine configurationLine : configurationLines)   
         {
-            cmpLine=Utils.sanitizeLineSpaces(configurationLine.getLine());
+            cmpLine = processConfigurationLine(defines, configurationLine.getLine());
             
             /**
              * Parse IfModule statements to see if we should add the directives
@@ -465,6 +491,8 @@ public class Parser {
 	 */
 	public String[] getActiveConfFileList() throws Exception
 	{		
+		Define defines[] = getAllDefines(); 
+		
 		ParsableLine lines[] = getConfigurationParsableLines(true);
 		
 		ArrayList<String> files = new ArrayList<String>();
@@ -475,7 +503,7 @@ public class Parser {
 		{
 			if(line.isInclude()) 
 			{
-				strLine=Utils.sanitizeLineSpaces(line.getConfigurationLine().getLine());
+				strLine = processConfigurationLine(defines, line.getConfigurationLine().getLine());
 								
 				if(!isCommentMatch(strLine) && isIncludeMatch(strLine))
 				{
