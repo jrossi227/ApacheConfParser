@@ -53,7 +53,7 @@ public class Parser {
 	 * @param line the line to check for a comment.
 	 * @return a boolean indicating if the line is a comment.
 	 */
-	public boolean isCommentMatch(String line) {
+	public static boolean isCommentMatch(String line) {
 		Pattern commentPattern=Pattern.compile("^\\s*#");
 		return commentPattern.matcher(line).find(); 
 	}
@@ -65,7 +65,7 @@ public class Parser {
 	 * @param directiveType the name of the directive to match against. This is not case sensitive.
 	 * @return
 	 */
-	protected boolean isDirectiveMatch(String line, String directiveType) {
+	public static boolean isDirectiveMatch(String line, String directiveType) {
 		Pattern directivePattern=Pattern.compile("^\\s*\\b" +directiveType + "\\b +", Pattern.CASE_INSENSITIVE);	
 		return directivePattern.matcher(line).find(); 
 	}
@@ -79,7 +79,7 @@ public class Parser {
 	 * @param line the line to match against
 	 * @return a boolean indicating if the line matches a VirtualHost
 	 */
-	protected boolean isVHostMatch(String line) {
+	public static boolean isVHostMatch(String line) {
 		Pattern virtualHostPattern=Pattern.compile("<\\s*\\bVirtualHost\\b.*>", Pattern.CASE_INSENSITIVE);
 		return virtualHostPattern.matcher(line).find(); 
 	}
@@ -93,7 +93,7 @@ public class Parser {
 	 * @param line the line to match against
 	 * @return a boolean indicating if the line matches an IfModule Close declaration.
 	 */
-	protected boolean isVHostCloseMatch(String line) {
+	public static boolean isVHostCloseMatch(String line) {
 		Pattern virtualHostClosePattern=Pattern.compile("</.*\\bVirtualHost\\b.*>", Pattern.CASE_INSENSITIVE);
 		return virtualHostClosePattern.matcher(line).find(); 
 	}
@@ -107,7 +107,7 @@ public class Parser {
 	 * @param line the line to match against
 	 * @return a boolean indicating if the line matches an IfModule Open Negation
 	 */
-	protected boolean isIfModuleOpenNegateMatch(String line) {
+	public static boolean isIfModuleOpenNegateMatch(String line) {
 		Pattern ifModuleOpenNegatePattern=Pattern.compile("<\\s*\\bifmodule\\b.*!.*>", Pattern.CASE_INSENSITIVE);
 		return ifModuleOpenNegatePattern.matcher(line).find(); 
 	}
@@ -121,7 +121,7 @@ public class Parser {
 	 * @param line the line to match against
 	 * @return a boolean indicating if the line matches an IfModule Open Declaration
 	 */
-	protected boolean isIfModuleOpenMatch(String line) {
+	public static boolean isIfModuleOpenMatch(String line) {
 		Pattern ifModuleOpenPattern=Pattern.compile("<\\s*\\bifmodule\\b.*>", Pattern.CASE_INSENSITIVE);
 		return ifModuleOpenPattern.matcher(line).find(); 
 	}
@@ -135,7 +135,7 @@ public class Parser {
 	 * @param line the line to match against
 	 * @return a boolean indicating if the line matches an IfModule Close declaration.
 	 */
-	protected boolean isIfModuleCloseMatch(String line) {
+	public static boolean isIfModuleCloseMatch(String line) {
 		Pattern ifModuleClosePattern=Pattern.compile("</.*\\bifmodule\\b.*>", Pattern.CASE_INSENSITIVE);
 		return ifModuleClosePattern.matcher(line).find(); 
 	}
@@ -147,7 +147,7 @@ public class Parser {
 	 * @param enclosureType the name of the directive to match against. This is not case sensitive.
 	 * @return a boolean indicating if the line matches the enclosure.
 	 */
-	protected boolean isEnclosureTypeMatch(String line, String enclosureType) {
+	public static boolean isEnclosureTypeMatch(String line, String enclosureType) {
 		Pattern enclosurePattern=Pattern.compile("<\\s*\\b" + enclosureType + "\\b.*>", Pattern.CASE_INSENSITIVE);
 		return enclosurePattern.matcher(line).find(); 
 	}
@@ -159,7 +159,7 @@ public class Parser {
 	 * @param enclosureType the name of the enclosure to match against. This is not case sensitive.
 	 * @return a boolean indicating if the line matches the closing enclosure type.
 	 */
-	protected boolean isCloseEnclosureTypeMatch(String line, String enclosureType) {
+	public static boolean isCloseEnclosureTypeMatch(String line, String enclosureType) {
 		Pattern closeEnclosurePattern=Pattern.compile("</\\s*\\b" + enclosureType + "\\b.*>", Pattern.CASE_INSENSITIVE);
 		return closeEnclosurePattern.matcher(line).find(); 
 	}
@@ -170,7 +170,7 @@ public class Parser {
 	 * @param line the line to match against the enclosure.
 	 * @return a boolean indicating if the line matches the enclosure format.
 	 */
-	protected boolean isEnclosureMatch(String line) {
+	public static boolean isEnclosureMatch(String line) {
 		Pattern enclosurePattern=Pattern.compile("<\\s*[^/].*>", Pattern.CASE_INSENSITIVE);
 		return enclosurePattern.matcher(line).find(); 
 	}
@@ -180,12 +180,12 @@ public class Parser {
 	 * 
 	 * @param line the line to match against the closing enclosure.
 	 */
-	protected boolean isCloseEnclosureMatch(String line) {
+	public static boolean isCloseEnclosureMatch(String line) {
 		Pattern closeEnclosurePattern=Pattern.compile("</.*>", Pattern.CASE_INSENSITIVE);
 		return closeEnclosurePattern.matcher(line).find(); 
 	}
 	
-	protected boolean isIncludeMatch(String line) {
+	public static boolean isIncludeMatch(String line) {
         Pattern includePattern=Pattern.compile("\\b(Include|IncludeOptional)\\b", Pattern.CASE_INSENSITIVE);
         return includePattern.matcher(line).find(); 
     }
@@ -202,7 +202,7 @@ public class Parser {
 	 * @param staticModules
 	 * @return
 	 */
-	protected boolean isInNegateStaticModules(String line, StaticModule staticModules[]) {
+	public static boolean isInNegateStaticModules(String line, StaticModule staticModules[]) {
 		for(int j=0; j<staticModules.length; j++) {
 			if(staticModules[j].getName().replaceAll("_module", "").equals(line.replaceAll("(?i)<.*ifmodule.*mod_", "").replaceAll("\\.c.*>", "")
 					.replaceAll("(?i)<.*ifmodule *!", "").replaceAll("_module *>", ""))) {
@@ -221,7 +221,7 @@ public class Parser {
 	 * @param staticModules
 	 * @return
 	 */
-	protected boolean isInNegateSharedModules(String line, SharedModule sharedModules[]) {
+	public static boolean isInNegateSharedModules(String line, SharedModule sharedModules[]) {
 		for(int j=0; j<sharedModules.length; j++) {
 			if(sharedModules[j].getName().replaceAll("_module", "").equals(line.replaceAll("(?i)<.*ifmodule.*mod_", "").replaceAll("\\.c.*>", "")
 					.replaceAll("(?i)<.*ifmodule *!", "").replaceAll("_module *>", ""))) {
@@ -240,7 +240,7 @@ public class Parser {
 	 * @param staticModules
 	 * @return
 	 */
-	protected boolean isInStaticModules(String line, StaticModule staticModules[]) {
+	public static boolean isInStaticModules(String line, StaticModule staticModules[]) {
 		for(int j=0; j<staticModules.length; j++) {
 			if(staticModules[j].getName().replaceAll("_module", "").equals(line.replaceAll("(?i)<.*ifmodule.*mod_", "").replaceAll("\\.c.*>", "")
 					.replaceAll("(?i)<.*ifmodule *", "").replaceAll("_module *>", ""))) {
@@ -259,7 +259,7 @@ public class Parser {
 	 * @param staticModules
 	 * @return
 	 */
-	protected boolean isInSharedModules(String line, SharedModule sharedModules[]) {
+	public static boolean isInSharedModules(String line, SharedModule sharedModules[]) {
 		for(int j=0; j<sharedModules.length; j++) {
 			if(sharedModules[j].getName().replaceAll("_module", "").equals(line.replaceAll("(?i)<.*ifmodule.*mod_", "").replaceAll("\\.c.*>", "")
 					.replaceAll("(?i)<.*ifmodule *", "").replaceAll("_module *>", ""))) {
