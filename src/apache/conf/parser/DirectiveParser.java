@@ -1,11 +1,5 @@
 package apache.conf.parser;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -21,7 +15,7 @@ import apache.conf.modules.StaticModule;
  *
  */
 public class DirectiveParser extends Parser {
-		
+
     /**
      * @param rootConfFile
      *            the Apache root configuration file.
@@ -72,7 +66,7 @@ public class DirectiveParser extends Parser {
 
                 if (!isCommentMatch(strLine) && isDirectiveMatch(strLine, directiveType)) {
                     directiveValues = strLine.replaceAll("(\\s+)|(\\s*,\\s*)", "@@").replaceAll("\"", "").split("@@");
-                    for (String directiveValue: directiveValues) {
+                    for (String directiveValue : directiveValues) {
                         addDirective += " " + directiveValue;
                     }
                     directives.add(addDirective.trim());
@@ -82,7 +76,7 @@ public class DirectiveParser extends Parser {
 
         return directives.toArray(new String[directives.size()]);
     }
-	
+
     /**
      * <p>
      * Parses all active configuration files for the directive specified by directiveType.
@@ -106,7 +100,7 @@ public class DirectiveParser extends Parser {
 
             directiveValues = value.split(" ");
             addDirective = new Directive(directiveType);
-            for (String directiveValue: directiveValues) {
+            for (String directiveValue : directiveValues) {
                 addDirective.addValue(directiveValue);
             }
             directives.add(addDirective);
@@ -138,15 +132,15 @@ public class DirectiveParser extends Parser {
     public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, boolean before, boolean includeVHosts) throws Exception {
         return insertDirectiveBeforeOrAfterFirstFound(directiveType, directiveString, Pattern.compile(".*"), before, includeVHosts);
     }
-	
+
     /**
      * <p>
      * Inserts a directive string before or after the first found matching directive type and matches the matchesRegex.
      * </p>
      * <p>
      * For Example: <br/>
-     * If you specify a directive type of "Listen", matches ".*[^0-9]70([^0-9].*|)" and a directive String of "Listen 127.0.0.1:80" then this directive String would be inserted after the first
-     * "Listen" directive with a value containing the number "70" in the configuration eg. "Listen 70"
+     * If you specify a directive type of "Listen", matches "[^0-9]70([^0-9]|)" and a directive String of "Listen 127.0.0.1:80" then this directive String would be inserted after the first "Listen"
+     * directive with a value containing the number "70" in the configuration eg. "Listen 70"
      * </p>
      * 
      * @param directiveType
@@ -177,8 +171,7 @@ public class DirectiveParser extends Parser {
 
             ParsableLine lines[] = getFileParsableLines(file, includeVHosts);
 
-            String strLine = "";
-            String cmpLine = "";
+            String strLine = "", cmpLine = "";
 
             boolean found = false;
             for (ParsableLine line : lines) {
@@ -215,7 +208,7 @@ public class DirectiveParser extends Parser {
 
         return directiveFound;
     }
-	
+
     /**
      * Parses the Apache active file list looking for the first file with the directive and value combination.
      * 
@@ -260,52 +253,48 @@ public class DirectiveParser extends Parser {
      *            The value to search for. The value is not case sensitive. Set this to empty if you dont wish to search for a specific value. The value is compared on a "contains" basis.
      * @param commentOut
      *            a boolean indicating if the directive should be commented out rather than completely removed from the file.
+     * @return a boolean indicating if the directive was found.
+     *
      * @throws Exception
      */
-    public void removeDirectiveFromFile(String directiveType, String file, Pattern matchesPattern, boolean commentOut) throws Exception {
+    public boolean removeDirectiveFromFile(String directiveType, String file, Pattern matchesPattern, boolean commentOut, boolean includeVHosts) throws Exception {
         Define defines[] = getAllDefines(directiveType);
 
-        FileInputStream fstream = new FileInputStream(file);
-        DataInputStream in = new DataInputStream(fstream);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        StringBuffer fileText = new StringBuffer();
 
-        File FileHandle = new File(file + ".tmp");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(FileHandle));
+        boolean changed = false;
 
-        String strLine;
-        String cmpLine;
-        while ((strLine = br.readLine()) != null) {
+        ParsableLine lines[] = getFileParsableLines(file, includeVHosts);
+
+        String strLine = "", cmpLine = "";
+        for (ParsableLine line : lines) {
+            strLine = line.getConfigurationLine().getLine();
             cmpLine = processConfigurationLine(defines, strLine);
 
-            if (!isCommentMatch(cmpLine) && isDirectiveMatch(cmpLine, directiveType)) {
+            if (!isCommentMatch(cmpLine) && isDirectiveMatch(cmpLine, directiveType) && line.isInclude()) {
 
                 if (matchesPattern.matcher(cmpLine).find()) {
 
+                    changed = true;
+
                     if (commentOut) {
-                        writer.write("#" + strLine);
-                        writer.newLine();
+                        fileText.append("#" + strLine + Const.newLine);
                     }
                 } else {
-                    writer.write(strLine);
-                    writer.newLine();
+                    fileText.append(strLine + Const.newLine);
                 }
             } else {
-                writer.write(strLine);
-                writer.newLine();
+                fileText.append(strLine + Const.newLine);
             }
-
         }
-        in.close();
-        writer.flush();
-        writer.close();
 
-        File fileNew = new File(file + ".tmp");
+        if (changed) {
+            Utils.writeStringBufferToFile(new File(file), fileText, Charset.forName("UTF-8"));
+        }
 
-        File fileOld = new File(file);
-
-        Utils.moveFile(fileNew, fileOld);
+        return changed;
     }
-	
+
     /**
      * Goes through the target file and replaces the value of the passed in directive type with the insertValue.
      * 
@@ -321,52 +310,49 @@ public class DirectiveParser extends Parser {
      *            - Specifies whether we should add the directive to the file if it doesent exist.
      * @throws Exception
      */
-    public void setDirectiveInFile(String directiveType, String file, String insertValue, Pattern matchesPattern, boolean add) throws Exception {
+    public void setDirectiveInFile(String directiveType, String file, String insertValue, Pattern matchesPattern, boolean add, boolean includeVHosts) throws Exception {
+
         Define defines[] = getAllDefines(directiveType);
 
-        FileInputStream fstream = new FileInputStream(file);
-        DataInputStream in = new DataInputStream(fstream);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        StringBuffer fileText = new StringBuffer();
 
-        File FileHandle = new File(file + ".tmp");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(FileHandle));
+        boolean changed = false;
 
-        String strLine;
-        String cmpLine;
-        boolean found = false;
-        while ((strLine = br.readLine()) != null) {
+        ParsableLine lines[] = getFileParsableLines(file, includeVHosts);
+
+        String strLine = "", cmpLine = "";
+        for (ParsableLine line : lines) {
+            strLine = line.getConfigurationLine().getLine();
             cmpLine = processConfigurationLine(defines, strLine);
 
-            if (!isCommentMatch(cmpLine) && isDirectiveMatch(cmpLine, directiveType)) {
+            if (!isCommentMatch(cmpLine) && isDirectiveMatch(cmpLine, directiveType) && line.isInclude()) {
+
                 if (matchesPattern.matcher(cmpLine).find()) {
-                    writer.write(directiveType + " " + insertValue);
-                    writer.newLine();
-                    found = true;
+
+                    changed = true;
+
+                    fileText.append(directiveType + " " + insertValue);
+                    fileText.append(Const.newLine);
                 } else {
-                    writer.write(strLine);
-                    writer.newLine();
+                    fileText.append(strLine + Const.newLine);
                 }
             } else {
-                writer.write(strLine);
-                writer.newLine();
+                fileText.append(strLine + Const.newLine);
             }
-
         }
 
-        if (!found && add) {
-            writer.newLine();
-            writer.write(directiveType + " " + insertValue);
-            writer.newLine();
+        if (!changed && add) {
+
+            changed = true;
+
+            fileText.append(Const.newLine);
+            fileText.append(directiveType + " " + insertValue);
+            fileText.append(Const.newLine);
         }
 
-        in.close();
-        writer.flush();
-        writer.close();
+        if (changed) {
+            Utils.writeStringBufferToFile(new File(file), fileText, Charset.forName("UTF-8"));
+        }
 
-        File fileNew = new File(file + ".tmp");
-
-        File fileOld = new File(file);
-
-        Utils.moveFile(fileNew, fileOld);
     }
 }
