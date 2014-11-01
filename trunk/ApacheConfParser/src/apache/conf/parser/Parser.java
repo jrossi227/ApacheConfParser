@@ -226,11 +226,10 @@ public class Parser {
      */
     public static boolean isInNegateModules(String line, Module modules[]) {
         for (Module module : modules) {
-            if (module
-                    .getName()
-                    .replaceAll("_module", "")
-                    .equals(line.replaceAll("(?i)<\\s*\\bifmodule\\b\\s*!mod_", "").replaceAll("\\.c\\s*>", "")
-                                .replaceAll("(?i)<\\s*\\bifmodule\\b\\s*!", "").replaceAll("_module\\s*>", ""))) {
+            if (module.getName()
+                      .replaceAll("_module", "")
+                      .equals(line.replaceAll("(?i)<\\s*\\bifmodule\\b\\s*!mod_", "").replaceAll("\\.c\\s*>", "")
+                                  .replaceAll("(?i)<\\s*\\bifmodule\\b\\s*!", "").replaceAll("_module\\s*>", ""))) {
                 return true;
             }
         }
@@ -252,11 +251,10 @@ public class Parser {
 	 */
     public static boolean isInModules(String line, Module modules[]) {
         for (Module module : modules) {
-            if (module
-                    .getName()
-                    .replaceAll("_module", "")
-                    .equals(line.replaceAll("(?i)<\\s*\\bifmodule\\b\\s*mod_", "").replaceAll("\\.c\\s*>", "")
-                                .replaceAll("(?i)<\\s*\\bifmodule\\b\\s*", "").replaceAll("_module\\s*>", ""))) {
+            if (module.getName()
+                      .replaceAll("_module", "")
+                      .equals(line.replaceAll("(?i)<\\s*\\bifmodule\\b\\s*mod_", "").replaceAll("\\.c\\s*>", "")
+                                  .replaceAll("(?i)<\\s*\\bifmodule\\b\\s*", "").replaceAll("_module\\s*>", ""))) {
                 return true;
             }
         }
