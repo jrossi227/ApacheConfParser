@@ -12,7 +12,7 @@ package apache.conf.modules;
  * </p>
  *
  */
-public class Module implements Comparable
+public class Module implements Comparable<Module>
 {
 	private String name;
 	private Type type;
@@ -44,13 +44,11 @@ public class Module implements Comparable
 	
 	@Override
 	public int hashCode() {
-        return name.hashCode() + type.hashCode();
+        return (name + type).hashCode();
     }
 
 	@Override
-	public int compareTo(Object mod) {
-		Module module = (Module)mod;
-		
-		return this.name.compareTo(module.getName());
+	public int compareTo(Module mod) {
+		return this.name.compareTo(mod.getName());
 	}
 }
