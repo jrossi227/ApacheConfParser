@@ -1,7 +1,9 @@
 package apache.conf.modules;
 
 import java.io.BufferedReader;
+
 import apache.conf.parser.File;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 
@@ -47,17 +49,10 @@ public class SharedModuleParser extends ModuleParser{
 	 */
 	public SharedModule[] getSharedModules() throws Exception
 	{
+		String output = runModuleCommand();
+		
 		ArrayList <SharedModule>modules=new ArrayList<SharedModule>();
 		
-		String commandString ="";
-		if(Utils.isWindows()) {
-			commandString = "cmd,/c," + binFile.getAbsolutePath() + ",-M";
-		} else {
-			commandString = binFile.getAbsolutePath() + ",-M";
-		}
-		
-		String command[]=commandString.split(",");
-		String output=Utils.RunProcessWithOutput(command);
 		BufferedReader reader = new BufferedReader(new StringReader(output));
 		
 		String line;

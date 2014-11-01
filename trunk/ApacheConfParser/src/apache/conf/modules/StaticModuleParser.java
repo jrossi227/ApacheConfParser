@@ -44,17 +44,11 @@ public class StaticModuleParser extends ModuleParser {
 	 */
 	public StaticModule[] getStaticModules() throws Exception
 	{
+		
+		String output = runModuleCommand();
+		
 		ArrayList <StaticModule>modules=new ArrayList<StaticModule>();
 		
-		String commandString ="";
-		if(Utils.isWindows()) {
-			commandString = "cmd,/c," + binFile.getAbsolutePath() + ",-M";
-		} else {
-			commandString = binFile.getAbsolutePath() + ",-M";
-		}
-		
-		String command[]=commandString.split(",");
-		String output=Utils.RunProcessWithOutput(command);
 		BufferedReader reader = new BufferedReader(new StringReader(output));
 		
 		String line;
@@ -74,5 +68,4 @@ public class StaticModuleParser extends ModuleParser {
 		
 		return modules.toArray(new StaticModule[modules.size()]);
 	}
-
 }

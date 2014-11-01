@@ -1,5 +1,8 @@
 package apache.conf.modules;
 
+import java.io.IOException;
+
+import apache.conf.global.Utils;
 import apache.conf.parser.File;
 
 public class ModuleParser {
@@ -12,6 +15,22 @@ public class ModuleParser {
 		}
 		
 		this.binFile = binFile;
+	}
+	
+	protected String runModuleCommand() throws IOException, InterruptedException {
+				
+		String commandString;
+		if(Utils.isWindows()) {
+			commandString = "cmd,/c," + binFile.getAbsolutePath() + ",-M";
+		} else {
+			commandString = binFile.getAbsolutePath() + ",-M";
+		}
+		
+		String command[]=commandString.split(",");
+		String output=Utils.RunProcessWithOutput(command);
+		
+		return output;
+		
 	}
 	
 }
