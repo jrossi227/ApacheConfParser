@@ -50,24 +50,22 @@ public class DirectiveParser extends Parser {
      */
     public String[] getDirectiveValue(String directiveType, boolean includeVHosts) throws Exception {
 
-        Define defines[] = getAllDefines(directiveType);
-
         ArrayList<String> directives = new ArrayList<String>();
 
-        ParsableLine lines[] = getConfigurationParsableLines(includeVHosts);
+        ParsableLine lines[] = getConfigurationParsableLines(directiveType, includeVHosts);
         String strLine = "";
         for (ParsableLine line : lines) {
             if (line.isInclude()) {
 
-                strLine = processConfigurationLine(defines, line.getConfigurationLine().getLine());
+                strLine = line.getConfigurationLine().getProcessedLine();
 
                 String directiveValues[];
                 String addDirective = "";
 
                 if (!isCommentMatch(strLine) && isDirectiveMatch(strLine, directiveType)) {
                     directiveValues = strLine.replaceAll("(\\s+)|(\\s*,\\s*)", "@@").replaceAll("\"", "").split("@@");
-                    for (String directiveValue : directiveValues) {
-                        addDirective += " " + directiveValue;
+                    for (int i=1; i<directiveValues.length; i++) {
+                        addDirective += " " + directiveValues[i];
                     }
                     directives.add(addDirective.trim());
                 }
@@ -157,8 +155,7 @@ public class DirectiveParser extends Parser {
      * @throws Exception
      */
     public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, Pattern matchesPattern, boolean before, boolean includeVHosts) throws Exception {
-        Define defines[] = getAllDefines(directiveType);
-
+        
         boolean directiveFound = false;
 
         String file = getDirectiveFile(directiveType, matchesPattern, includeVHosts);
@@ -176,7 +173,7 @@ public class DirectiveParser extends Parser {
             boolean found = false;
             for (ParsableLine line : lines) {
                 strLine = line.getConfigurationLine().getLine();
-                cmpLine = processConfigurationLine(defines, strLine);
+                cmpLine = line.getConfigurationLine().getProcessedLine();
 
                 if (found) {
                     fileText.append(strLine + Const.newLine);
@@ -222,14 +219,13 @@ public class DirectiveParser extends Parser {
      * @throws Exception
      */
     public String getDirectiveFile(String directiveType, Pattern matchesPattern, boolean includeVHosts) throws Exception {
-        Define defines[] = getAllDefines(directiveType);
 
         ParsableLine lines[] = getConfigurationParsableLines(includeVHosts);
 
         String strLine = "";
         for (ParsableLine line : lines) {
             if (line.isInclude()) {
-                strLine = processConfigurationLine(defines, line.getConfigurationLine().getLine());
+                strLine = line.getConfigurationLine().getProcessedLine();
 
                 if (!isCommentMatch(strLine) && isDirectiveMatch(strLine, directiveType)) {
                     if (matchesPattern.matcher(strLine).find()) {
@@ -258,7 +254,6 @@ public class DirectiveParser extends Parser {
      * @throws Exception
      */
     public boolean removeDirectiveFromFile(String directiveType, String file, Pattern matchesPattern, boolean commentOut, boolean includeVHosts) throws Exception {
-        Define defines[] = getAllDefines(directiveType);
 
         StringBuffer fileText = new StringBuffer();
 
@@ -269,7 +264,7 @@ public class DirectiveParser extends Parser {
         String strLine = "", cmpLine = "";
         for (ParsableLine line : lines) {
             strLine = line.getConfigurationLine().getLine();
-            cmpLine = processConfigurationLine(defines, strLine);
+            cmpLine = line.getConfigurationLine().getProcessedLine();
 
             if (!isCommentMatch(cmpLine) && isDirectiveMatch(cmpLine, directiveType) && line.isInclude()) {
 
@@ -312,8 +307,6 @@ public class DirectiveParser extends Parser {
      */
     public void setDirectiveInFile(String directiveType, String file, String insertValue, Pattern matchesPattern, boolean add, boolean includeVHosts) throws Exception {
 
-        Define defines[] = getAllDefines(directiveType);
-
         StringBuffer fileText = new StringBuffer();
 
         boolean changed = false;
@@ -323,7 +316,7 @@ public class DirectiveParser extends Parser {
         String strLine = "", cmpLine = "";
         for (ParsableLine line : lines) {
             strLine = line.getConfigurationLine().getLine();
-            cmpLine = processConfigurationLine(defines, strLine);
+            cmpLine = line.getConfigurationLine().getProcessedLine();
 
             if (!isCommentMatch(cmpLine) && isDirectiveMatch(cmpLine, directiveType) && line.isInclude()) {
 
