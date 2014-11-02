@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-import apache.conf.global.Const;
 import apache.conf.global.Utils;
 import apache.conf.modules.Module;
 import apache.conf.modules.SharedModule;
@@ -262,24 +261,14 @@ public class Parser {
         return false;
     }
 
-	protected Define[] getAllDefines() throws Exception {
-		return getAllDefines("");
-	}
-	
-    protected Define[] getAllDefines(String directiveType) throws Exception {
+    private ConfigurationLine[] getConfigurationLines(String confFile, boolean loadDefines) throws Exception {
+
         Define defines[];
-        if (!directiveType.equals(Const.defineDirective)) {
+        if (loadDefines) {
             defines = Define.getAllDefine(new DirectiveParser(rootConfFile, serverRoot, staticModules, sharedModules));
         } else {
             defines = new Define[0];
         }
-
-        return defines;
-    }
-	
-    private ConfigurationLine[] getConfigurationLines(String directiveType, String confFile) throws Exception {
-
-        Define defines[] = getAllDefines(directiveType);
         
         ArrayList<ConfigurationLine> configurationLines = new ArrayList<ConfigurationLine>();
         
@@ -452,19 +441,32 @@ public class Parser {
     }
 	
 	public ParsableLine[] getConfigurationParsableLines(boolean includeVHosts) throws IOException, Exception {
-		return getConfigurationParsableLines("", includeVHosts);
+		return getConfigurationParsableLines(true, includeVHosts);
 	}
 	
-	protected ParsableLine[] getConfigurationParsableLines(String directiveType, boolean includeVHosts) throws IOException, Exception {
-        return getParsableLines(getConfigurationLines(directiveType, rootConfFile), includeVHosts);
+	protected ParsableLine[] getConfigurationParsableLines(boolean loadDefines, boolean includeVHosts) throws IOException, Exception {
+        return getParsableLines(getConfigurationLines(rootConfFile, loadDefines), includeVHosts);
     }
 	
 	public ParsableLine[] getFileParsableLines(String file, boolean includeVHosts) throws IOException, Exception {
-	    return getFileParsableLines("", file, includeVHosts);
+	    return getFileParsableLines(file, true, includeVHosts);
 	}
 	
-	protected ParsableLine[] getFileParsableLines(String directiveType, String file, boolean includeVHosts) throws IOException, Exception {
-        return getParsableLines(getConfigurationLines(directiveType, file), includeVHosts);
+    protected ParsableLine[] getFileParsableLines(String file, boolean loadDefines, boolean includeVHosts) throws IOException, Exception {
+
+        ArrayList<ConfigurationLine> fileConfigurationLines = new ArrayList<ConfigurationLine>();
+
+        File currentFile = new File(file);
+
+        // filter any lines that dont belong to this file
+        ConfigurationLine configurationLines[] = getConfigurationLines(file, loadDefines);
+        for (ConfigurationLine configurationLine : configurationLines) {
+            if (currentFile.getAbsolutePath().equals(new File(configurationLine.getFile()).getAbsolutePath())) {
+                fileConfigurationLines.add(configurationLine);
+            }
+        }
+
+        return getParsableLines(fileConfigurationLines.toArray(new ConfigurationLine[fileConfigurationLines.size()]), includeVHosts);
     }
 		
     /**
