@@ -52,7 +52,12 @@ public class DirectiveParser extends Parser {
 
         ArrayList<String> directives = new ArrayList<String>();
 
-        ParsableLine lines[] = getConfigurationParsableLines(directiveType, includeVHosts);
+        boolean loadDefines = true;
+        if(directiveType.equals(Const.defineDirective)) {
+            loadDefines = false;
+        }
+        
+        ParsableLine lines[] = getConfigurationParsableLines(loadDefines, includeVHosts);
         String strLine = "";
         for (ParsableLine line : lines) {
             if (line.isInclude()) {
