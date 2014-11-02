@@ -21,7 +21,7 @@ import apache.conf.modules.StaticModule;
  *
  */
 public class Parser {
-				
+				    
 	protected String rootConfFile;
 	protected String serverRoot;
 	protected StaticModule staticModules[];
@@ -277,42 +277,36 @@ public class Parser {
         return defines;
     }
 	
-    protected String processConfigurationLine(Define defines[], String line) {
+    private ConfigurationLine[] getConfigurationLines(String directiveType, String confFile) throws Exception {
 
-        return Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(line));
-
-    }
-
-    private ConfigurationLine[] getConfigurationLines(String confFile) throws Exception {
-
+        Define defines[] = getAllDefines(directiveType);
+        
         ArrayList<ConfigurationLine> configurationLines = new ArrayList<ConfigurationLine>();
-
-        getConfigurationString(confFile, configurationLines);
-
+        
+        getConfigurationLines(defines, confFile, configurationLines);
+        
         return configurationLines.toArray(new ConfigurationLine[configurationLines.size()]);
     }
 
-    private void getConfigurationString(String confFile, ArrayList<ConfigurationLine> configurationLines) throws Exception {
-
-        Define defines[] = getAllDefines();
+    private void getConfigurationLines(Define defines[], String confFile, ArrayList<ConfigurationLine> configurationLines) throws Exception {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(confFile), "UTF-8"));
 
         try {
 
-            String strLine;
+            String strLine, cmpLine;
             int lineNumInFile = 0;
             while ((strLine = br.readLine()) != null) {
 
                 lineNumInFile++;
 
-                configurationLines.add(new ConfigurationLine(strLine, confFile, lineNumInFile));
+                cmpLine = Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(strLine));
+                
+                configurationLines.add(new ConfigurationLine(strLine, cmpLine, confFile, lineNumInFile));
 
-                strLine = processConfigurationLine(defines, strLine);
+                if (!isCommentMatch(cmpLine) && isIncludeMatch(cmpLine)) {
 
-                if (!isCommentMatch(strLine) && isIncludeMatch(strLine)) {
-
-                    String file = getFileFromInclude(strLine);
+                    String file = getFileFromInclude(cmpLine);
 
                     // if the filename starts with it is an absolute path,
                     // otherwise its a relative path
@@ -334,7 +328,7 @@ public class Parser {
                         for (String child : children) {
                             refFile = new File(check.getAbsolutePath(), child);
                             if (!refFile.isDirectory()) {
-                                getConfigurationString(refFile.getAbsolutePath(), configurationLines);
+                                getConfigurationLines(defines, refFile.getAbsolutePath(), configurationLines);
                             }
                         }
                     } else {
@@ -350,11 +344,11 @@ public class Parser {
                                 refFile = new File(parent.getAbsolutePath(), child);
                                 if (!refFile.isDirectory()
                                         && refFile.getName().matches(check.getName().replaceAll("\\.", "\\.").replaceAll("\\*", ".*"))) {
-                                    getConfigurationString(refFile.getAbsolutePath(), configurationLines);
+                                    getConfigurationLines(defines, refFile.getAbsolutePath(), configurationLines);
                                 }
                             }
                         } else {
-                            getConfigurationString(check.getAbsolutePath(), configurationLines);
+                            getConfigurationLines(defines, check.getAbsolutePath(), configurationLines);
                         }
                     }
                 }
@@ -367,7 +361,6 @@ public class Parser {
     }
 
     protected ParsableLine[] getParsableLines(ConfigurationLine[] configurationLines, boolean includeVHosts) throws Exception {
-        Define defines[] = getAllDefines();
 
         ArrayList<ParsableLine> lines = new ArrayList<ParsableLine>();
 
@@ -378,7 +371,7 @@ public class Parser {
 
         String cmpLine;
         for (ConfigurationLine configurationLine : configurationLines) {
-            cmpLine = processConfigurationLine(defines, configurationLine.getLine());
+            cmpLine = configurationLine.getProcessedLine();
 
             /**
              * Parse IfModule statements to see if we should add the directives
@@ -459,12 +452,20 @@ public class Parser {
     }
 	
 	public ParsableLine[] getConfigurationParsableLines(boolean includeVHosts) throws IOException, Exception {
-		return getParsableLines(getConfigurationLines(rootConfFile), includeVHosts);
+		return getConfigurationParsableLines("", includeVHosts);
 	}
 	
+	protected ParsableLine[] getConfigurationParsableLines(String directiveType, boolean includeVHosts) throws IOException, Exception {
+        return getParsableLines(getConfigurationLines(directiveType, rootConfFile), includeVHosts);
+    }
+	
 	public ParsableLine[] getFileParsableLines(String file, boolean includeVHosts) throws IOException, Exception {
-	    return getParsableLines(getConfigurationLines(file), includeVHosts);
+	    return getFileParsableLines("", file, includeVHosts);
 	}
+	
+	protected ParsableLine[] getFileParsableLines(String directiveType, String file, boolean includeVHosts) throws IOException, Exception {
+        return getParsableLines(getConfigurationLines(directiveType, file), includeVHosts);
+    }
 		
     /**
      * Gets a list of the configuration files currently included in the apache configuration.

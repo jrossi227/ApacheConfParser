@@ -46,7 +46,6 @@ public class EnclosureParser extends Parser {
      * @throws Exception
      */
     public Enclosure[] getEnclosure(String enclosureType, boolean includeVHosts) throws Exception {
-        Define defines[] = getAllDefines();
 
         ArrayList<Enclosure> enclosures = new ArrayList<Enclosure>();
 
@@ -59,7 +58,7 @@ public class EnclosureParser extends Parser {
         int treeCount = 0;
         for (ParsableLine line : lines) {
             if (line.isInclude()) {
-                strLine = processConfigurationLine(defines, line.getConfigurationLine().getLine());
+                strLine = line.getConfigurationLine().getProcessedLine();
 
                 if (!isCommentMatch(strLine) && isEnclosureTypeMatch(strLine, enclosureType)) {
                     insideEnclosure = true;
@@ -75,7 +74,7 @@ public class EnclosureParser extends Parser {
 
                         if (treeCount == 0) {
                             insideEnclosure = false;
-                            enclosures.add(parseEnclosure(parsableLines.toArray(new ParsableLine[parsableLines.size()]), defines, includeVHosts));
+                            enclosures.add(parseEnclosure(parsableLines.toArray(new ParsableLine[parsableLines.size()]), includeVHosts));
                             parsableLines.clear();
                         }
                     }
@@ -86,7 +85,7 @@ public class EnclosureParser extends Parser {
         return enclosures.toArray(new Enclosure[enclosures.size()]);
     }
 
-    private Enclosure parseEnclosure(ParsableLine[] parsableLines, Define defines[], boolean includeVHosts) throws Exception {
+    private Enclosure parseEnclosure(ParsableLine[] parsableLines, boolean includeVHosts) throws Exception {
 
         String strLine;
         Enclosure enclosure = new Enclosure();
@@ -100,7 +99,7 @@ public class EnclosureParser extends Parser {
         for (ParsableLine parsableLine : parsableLines) {
             iter++;
 
-            strLine = processConfigurationLine(defines, parsableLine.getConfigurationLine().getLine());
+            strLine = parsableLine.getConfigurationLine().getProcessedLine();
 
             if (iter == 1) {
                 String enclosureValues[] = strLine.replaceAll("\"|>|<", "").trim().replaceAll("\\s+|,", "@@").split("@@");
@@ -128,7 +127,7 @@ public class EnclosureParser extends Parser {
 
                         if (treeCount == 0) {
                             insideEnclosure = false;
-                            enclosure.addEnclosure(parseEnclosure(subParsableLines.toArray(new ParsableLine[subParsableLines.size()]), defines, includeVHosts));
+                            enclosure.addEnclosure(parseEnclosure(subParsableLines.toArray(new ParsableLine[subParsableLines.size()]), includeVHosts));
                             subParsableLines.clear();
                         }
                     }
@@ -156,7 +155,6 @@ public class EnclosureParser extends Parser {
      * @throws Exception
      */
     public void deleteEnclosure(String enclosureType, Pattern matchesValuePattern, boolean commentOut, boolean includeVHosts) throws Exception {
-        Define defines[] = getAllDefines();
 
         String includedFiles[] = getActiveConfFileList();
 
@@ -177,7 +175,7 @@ public class EnclosureParser extends Parser {
             String strLine = "", cmpLine = "";
             for (ParsableLine line : lines) {
                 strLine = line.getConfigurationLine().getLine();
-                cmpLine = processConfigurationLine(defines, strLine);
+                cmpLine = line.getConfigurationLine().getProcessedLine();
 
                 if (!isCommentMatch(cmpLine) && isEnclosureTypeMatch(cmpLine, enclosureType) && line.isInclude()) {
 
