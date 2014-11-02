@@ -2,20 +2,19 @@ package apache.conf.modules;
 
 public class AvailableModule extends Module {
 
-	private String filename;
-	
-	public AvailableModule(String name, String filename) {
-		super(name, Type.AVAILABLE);
-		
-		this.filename=filename;
-	}
+    private String filename;
 
-	public String getFilename() {
-		return filename;
-	}
+    public AvailableModule(String name, String filename) {
+        super(name, Type.AVAILABLE);
 
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
+        this.filename = filename;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 }
-

@@ -53,10 +53,10 @@ public class DirectiveParser extends Parser {
         ArrayList<String> directives = new ArrayList<String>();
 
         boolean loadDefines = true;
-        if(directiveType.equals(Const.defineDirective)) {
+        if (directiveType.equals(Const.defineDirective)) {
             loadDefines = false;
         }
-        
+
         ParsableLine lines[] = getConfigurationParsableLines(loadDefines, includeVHosts);
         String strLine = "";
         for (ParsableLine line : lines) {
@@ -69,7 +69,7 @@ public class DirectiveParser extends Parser {
 
                 if (!isCommentMatch(strLine) && isDirectiveMatch(strLine, directiveType)) {
                     directiveValues = strLine.replaceAll("(\\s+)|(\\s*,\\s*)", "@@").replaceAll("\"", "").split("@@");
-                    for (int i=1; i<directiveValues.length; i++) {
+                    for (int i = 1; i < directiveValues.length; i++) {
                         addDirective += " " + directiveValues[i];
                     }
                     directives.add(addDirective.trim());
@@ -160,7 +160,7 @@ public class DirectiveParser extends Parser {
      * @throws Exception
      */
     public boolean insertDirectiveBeforeOrAfterFirstFound(String directiveType, String directiveString, Pattern matchesPattern, boolean before, boolean includeVHosts) throws Exception {
-        
+
         boolean directiveFound = false;
 
         String file = getDirectiveFile(directiveType, matchesPattern, includeVHosts);

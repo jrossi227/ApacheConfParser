@@ -20,12 +20,12 @@ import apache.conf.modules.StaticModule;
  *
  */
 public class Parser {
-				    
-	protected String rootConfFile;
-	protected String serverRoot;
-	protected StaticModule staticModules[];
-	protected SharedModule sharedModules[];
-	
+
+    protected String rootConfFile;
+    protected String serverRoot;
+    protected StaticModule staticModules[];
+    protected SharedModule sharedModules[];
+
     /**
      * @param rootConfFile
      *            the Apache root configuration file.
@@ -50,7 +50,7 @@ public class Parser {
         this.staticModules = staticModules;
         this.sharedModules = sharedModules;
     }
-	
+
     /**
      * Utility to check if a line matches an Apache comment.
      * 
@@ -225,35 +225,30 @@ public class Parser {
      */
     public static boolean isInNegateModules(String line, Module modules[]) {
         for (Module module : modules) {
-            if (module.getName()
-                      .replaceAll("_module", "")
-                      .equals(line.replaceAll("(?i)<\\s*\\bifmodule\\b\\s*!mod_", "").replaceAll("\\.c\\s*>", "")
-                                  .replaceAll("(?i)<\\s*\\bifmodule\\b\\s*!", "").replaceAll("_module\\s*>", ""))) {
+            if (module.getName().replaceAll("_module", "")
+                    .equals(line.replaceAll("(?i)<\\s*\\bifmodule\\b\\s*!mod_", "").replaceAll("\\.c\\s*>", "").replaceAll("(?i)<\\s*\\bifmodule\\b\\s*!", "").replaceAll("_module\\s*>", ""))) {
                 return true;
             }
         }
 
         return false;
     }
-	
-	/**
-	 * Checks for theifmodule
-	 * 
-	 * <IfModule module-file|module-identifier> ... </IfModule>
-	 * 
-	 * eg. <IfModule mpm_winnt_module>
-	 * 	   <IfModule mod_ssl.c>
-	 * 
-	 * @param line
-	 * @param staticModules
-	 * @return true if the module is loaded, false if it is not
-	 */
+
+    /**
+     * Checks for theifmodule
+     * 
+     * <IfModule module-file|module-identifier> ... </IfModule>
+     * 
+     * eg. <IfModule mpm_winnt_module> <IfModule mod_ssl.c>
+     * 
+     * @param line
+     * @param staticModules
+     * @return true if the module is loaded, false if it is not
+     */
     public static boolean isInModules(String line, Module modules[]) {
         for (Module module : modules) {
-            if (module.getName()
-                      .replaceAll("_module", "")
-                      .equals(line.replaceAll("(?i)<\\s*\\bifmodule\\b\\s*mod_", "").replaceAll("\\.c\\s*>", "")
-                                  .replaceAll("(?i)<\\s*\\bifmodule\\b\\s*", "").replaceAll("_module\\s*>", ""))) {
+            if (module.getName().replaceAll("_module", "")
+                    .equals(line.replaceAll("(?i)<\\s*\\bifmodule\\b\\s*mod_", "").replaceAll("\\.c\\s*>", "").replaceAll("(?i)<\\s*\\bifmodule\\b\\s*", "").replaceAll("_module\\s*>", ""))) {
                 return true;
             }
         }
@@ -269,11 +264,11 @@ public class Parser {
         } else {
             defines = new Define[0];
         }
-        
+
         ArrayList<ConfigurationLine> configurationLines = new ArrayList<ConfigurationLine>();
-        
+
         getConfigurationLines(defines, confFile, configurationLines);
-        
+
         return configurationLines.toArray(new ConfigurationLine[configurationLines.size()]);
     }
 
@@ -290,7 +285,7 @@ public class Parser {
                 lineNumInFile++;
 
                 cmpLine = Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(strLine));
-                
+
                 configurationLines.add(new ConfigurationLine(strLine, cmpLine, confFile, lineNumInFile));
 
                 if (!isCommentMatch(cmpLine) && isIncludeMatch(cmpLine)) {
@@ -331,8 +326,7 @@ public class Parser {
                             File refFile;
                             for (String child : children) {
                                 refFile = new File(parent.getAbsolutePath(), child);
-                                if (!refFile.isDirectory()
-                                        && refFile.getName().matches(check.getName().replaceAll("\\.", "\\.").replaceAll("\\*", ".*"))) {
+                                if (!refFile.isDirectory() && refFile.getName().matches(check.getName().replaceAll("\\.", "\\.").replaceAll("\\*", ".*"))) {
                                     getConfigurationLines(defines, refFile.getAbsolutePath(), configurationLines);
                                 }
                             }
@@ -439,19 +433,19 @@ public class Parser {
 
         return lines.toArray(new ParsableLine[lines.size()]);
     }
-	
-	public ParsableLine[] getConfigurationParsableLines(boolean includeVHosts) throws IOException, Exception {
-		return getConfigurationParsableLines(true, includeVHosts);
-	}
-	
-	protected ParsableLine[] getConfigurationParsableLines(boolean loadDefines, boolean includeVHosts) throws IOException, Exception {
+
+    public ParsableLine[] getConfigurationParsableLines(boolean includeVHosts) throws IOException, Exception {
+        return getConfigurationParsableLines(true, includeVHosts);
+    }
+
+    protected ParsableLine[] getConfigurationParsableLines(boolean loadDefines, boolean includeVHosts) throws IOException, Exception {
         return getParsableLines(getConfigurationLines(rootConfFile, loadDefines), includeVHosts);
     }
-	
-	public ParsableLine[] getFileParsableLines(String file, boolean includeVHosts) throws IOException, Exception {
-	    return getFileParsableLines(file, true, includeVHosts);
-	}
-	
+
+    public ParsableLine[] getFileParsableLines(String file, boolean includeVHosts) throws IOException, Exception {
+        return getFileParsableLines(file, true, includeVHosts);
+    }
+
     protected ParsableLine[] getFileParsableLines(String file, boolean loadDefines, boolean includeVHosts) throws IOException, Exception {
 
         ArrayList<ConfigurationLine> fileConfigurationLines = new ArrayList<ConfigurationLine>();
@@ -468,7 +462,7 @@ public class Parser {
 
         return getParsableLines(fileConfigurationLines.toArray(new ConfigurationLine[fileConfigurationLines.size()]), includeVHosts);
     }
-		
+
     /**
      * Gets a list of the configuration files currently included in the apache configuration.
      * 
