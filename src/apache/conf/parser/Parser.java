@@ -100,7 +100,7 @@ public class Parser {
      * 
      * @param line
      *            the line to match against
-     * @return a boolean indicating if the line matches an IfModule Close declaration.
+     * @return a boolean indicating if the line matches a VirtualHost Close declaration.
      */
     public static boolean isVHostCloseMatch(String line) {
         Pattern virtualHostClosePattern = Pattern.compile("</.*\\bVirtualHost\\b.*>", Pattern.CASE_INSENSITIVE);
@@ -158,7 +158,7 @@ public class Parser {
      * @param line
      *            the line to match against the enclosure.
      * @param enclosureType
-     *            the name of the directive to match against. This is not case sensitive.
+     *            the name of the enclosure to match against. This is not case sensitive.
      * @return a boolean indicating if the line matches the enclosure.
      */
     public static boolean isEnclosureTypeMatch(String line, String enclosureType) {
@@ -197,12 +197,20 @@ public class Parser {
      * 
      * @param line
      *            the line to match against the closing enclosure.
+     * @return a boolean indicating if the line matches a closing enclosure format.
      */
     public static boolean isCloseEnclosureMatch(String line) {
         Pattern closeEnclosurePattern = Pattern.compile("</.*>", Pattern.CASE_INSENSITIVE);
         return closeEnclosurePattern.matcher(line).find();
     }
 
+    /**
+     * Utility used to check if a line matches an Include directive
+     * 
+     * @param line
+     *            the line to match against the Include directive.
+     * @return a boolean indicating if the line matches an Include directive.
+     */
     public static boolean isIncludeMatch(String line) {
         Pattern includePattern = Pattern.compile("^\\s*\\b(Include|IncludeOptional)\\b", Pattern.CASE_INSENSITIVE);
         return includePattern.matcher(line).find();
