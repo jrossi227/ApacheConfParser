@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <project name="ApacheConfParser" default="jar" basedir=".">
-	
-	<property name="ant.build.javac.source" value="1.6"/>
-	<property name="ant.build.javac.target" value="1.6"/>
-	
-	<loadproperties srcFile="build.properties"/> 
-	
-	<property name="doc.dir"     value="../doc"/>
-	<property name="source.dir"     value="../src"/>
+    
+    <property name="ant.build.javac.source" value="1.6"/>
+    <property name="ant.build.javac.target" value="1.6"/>
+    
+    <loadproperties srcFile="build.properties"/> 
+    
+    <property name="doc.dir"     value="../doc"/>
+    <property name="source.dir"     value="../src"/>
     <property name="lib.dir"        value="../lib"/>
     <property name="class.dir"      value="classes"/>
     <property name="jar.dir"        value="../dist"/>
@@ -32,8 +32,8 @@
     </target>
 
     <target name="jar" depends="compile">
-    	
-    	<mkdir dir="${jar.dir}"/>
+        
+        <mkdir dir="${jar.dir}"/>
         <mkdir dir="${class.dir}/lib"/>
         <copy todir="${class.dir}/lib" flatten="true">
             <path refid="libraries.path"/>
@@ -44,7 +44,7 @@
         </manifestclasspath>
 
         <jar destfile="${jar.file}" basedir="${class.dir}">
-        	<zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
+            <zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
             <manifest>
                 <attribute name="Main-Class" value="${main-class}"/>
                 <attribute name="Class-Path" value="${manifest.classpath}"/>
@@ -55,27 +55,27 @@
     <target name="run" depends="jar">
         <java jar="${jar.file}" fork="true"/>
     </target>
-	
-	<target name="javadoc">
+    
+    <target name="javadoc">
         
-		<delete dir="${doc.dir}"/>
-		
-		<javadoc 
-        	access="public" 
-        	author="true" 
-        	classpath="." 
-        	destdir="${doc.dir}" 
-        	nodeprecated="false" 
-        	nodeprecatedlist="false" 
-        	noindex="false" 
-        	nonavbar="false" 
-        	notree="false" 
-        	packagenames="apache.conf.modules" 
-        	source="1.6" 
-        	sourcefiles="${source.dir}/apache/conf/parser/File.java,${source.dir}/apache/conf/parser/Directive.java,${source.dir}/apache/conf/parser/Enclosure.java,${source.dir}/apache/conf/parser/DirectiveParser.java,${source.dir}/apache/conf/parser/ParsableLine.java,${source.dir}/apache/conf/parser/EnclosureParser.java,${source.dir}/apache/conf/parser/Parser.java" 
-        	sourcepath="${source.dir}" 
-        	splitindex="true" 
-        	use="true" 
-        	version="true"/>
+        <delete dir="${doc.dir}"/>
+        
+        <javadoc 
+            access="public" 
+            author="true" 
+            classpath="." 
+            destdir="${doc.dir}" 
+            nodeprecated="false" 
+            nodeprecatedlist="false" 
+            noindex="false" 
+            nonavbar="false" 
+            notree="false" 
+            packagenames="apache.conf.modules" 
+            source="1.6" 
+            sourcefiles="${source.dir}/apache/conf/parser/File.java,${source.dir}/apache/conf/parser/Directive.java,${source.dir}/apache/conf/parser/Enclosure.java,${source.dir}/apache/conf/parser/DirectiveParser.java,${source.dir}/apache/conf/parser/ParsableLine.java,${source.dir}/apache/conf/parser/EnclosureParser.java,${source.dir}/apache/conf/parser/Parser.java" 
+            sourcepath="${source.dir}" 
+            splitindex="true" 
+            use="true" 
+            version="true"/>
     </target>
 </project>

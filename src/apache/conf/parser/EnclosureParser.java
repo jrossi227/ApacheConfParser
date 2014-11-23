@@ -146,12 +146,16 @@ public class EnclosureParser extends Parser {
     }
 
     /**
-     * Comments out all Enclosures from the active configuration that match the enclosure type and enclosure value regex.
+     * Removes all Enclosures from the active configuration that match the enclosure type and enclosure value pattern.
      * 
      * @param enclosureType
      *            The enclosure name. This is not case sensitive.
-     * @param valueRegex
-     *            The value to search for. This is not case sensitive and is a Java regex.
+     * @param matchesValuePattern
+     *            The pattern to match the enclosure value against
+     * @param commentOut
+     *            true to comment out the matching enclosure, false to remove the enclosure
+     * @param includeVHosts
+     *            boolean indicating whether to search for enclosures inside virtual hosts
      * @throws Exception
      */
     public void deleteEnclosure(String enclosureType, Pattern matchesValuePattern, boolean commentOut, boolean includeVHosts) throws Exception {

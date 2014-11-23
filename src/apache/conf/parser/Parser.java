@@ -228,8 +228,10 @@ public class Parser {
      * eg. <IfModule !mpm_winnt_module> <IfModule !mod_ssl.c>
      * 
      * @param line
+     *            the line to match against
      * @param Modules
-     * @return true if the module is loaded, false if it is not
+     *            list of modules to compare against
+     * @return true if the line matches a negate module
      */
     public static boolean isInNegateModules(String line, Module modules[]) {
         for (Module module : modules) {
@@ -243,15 +245,17 @@ public class Parser {
     }
 
     /**
-     * Checks for theifmodule
+     * Checks for the ifmodule
      * 
      * <IfModule module-file|module-identifier> ... </IfModule>
      * 
      * eg. <IfModule mpm_winnt_module> <IfModule mod_ssl.c>
      * 
      * @param line
-     * @param staticModules
-     * @return true if the module is loaded, false if it is not
+     *            the line to match against
+     * @param Modules
+     *            list of modules to compare against
+     * @return true if the line matches module
      */
     public static boolean isInModules(String line, Module modules[]) {
         for (Module module : modules) {
@@ -442,6 +446,15 @@ public class Parser {
         return lines.toArray(new ParsableLine[lines.size()]);
     }
 
+    /**
+     * Gets a list of all parsable lines in the configuration. The lines will be included in the order that they appear in the Apache configuration.
+     * 
+     * @param includeVHosts
+     *            boolean indicating whether to include parsable lines in Virtual Hosts
+     * 
+     * @return a list of parsable lines
+     * 
+     **/
     public ParsableLine[] getConfigurationParsableLines(boolean includeVHosts) throws IOException, Exception {
         return getConfigurationParsableLines(true, includeVHosts);
     }
@@ -450,6 +463,15 @@ public class Parser {
         return getParsableLines(getConfigurationLines(rootConfFile, loadDefines), includeVHosts);
     }
 
+    /**
+     * Gets a list of all parsable lines in a file. The lines will be included in the order that they appear in the Apache configuration.
+     * 
+     * @param includeVHosts
+     *            boolean indicating whether to include parsable lines in Virtual Hosts
+     * 
+     * @return a list of parsable lines
+     * 
+     **/
     public ParsableLine[] getFileParsableLines(String file, boolean includeVHosts) throws IOException, Exception {
         return getFileParsableLines(file, true, includeVHosts);
     }
@@ -472,9 +494,9 @@ public class Parser {
     }
 
     /**
-     * Gets a list of the configuration files currently included in the apache configuration.
+     * Gets a unique list of configuration files currently included in the apache configuration. 
      * 
-     * @return an array with all included configuration files.
+     * @return an array with all included configuration files. The list of files is in the order that they appear in the apache configuration.
      * @throws Exception
      */
     public String[] getActiveConfFileList() throws Exception {
