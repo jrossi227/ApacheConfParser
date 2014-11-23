@@ -14,7 +14,7 @@ import apache.conf.global.Utils;
  * This class is used to parse and grab Static Modules from the Apache configuration.
  * </p>
  * <p>
- * Static Modules are directly compiled into Apache.
+ * Static Modules are compiled into Apache.
  * </p>
  */
 public class StaticModuleParser extends ModuleParser {
@@ -41,7 +41,7 @@ public class StaticModuleParser extends ModuleParser {
      * Gets a list of all statically loaded modules. These modules can never change so it is recommended that the result of this function be cached whenever possible.
      * 
      * @return an array of all Static Modules.
-     * @throws Exception
+     * @throws Exception if there is an error obtaining modules
      */
     public StaticModule[] getStaticModules() throws Exception {
 

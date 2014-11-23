@@ -70,7 +70,7 @@ public class Parser {
      *            the line to check for the directive type.
      * @param directiveType
      *            the name of the directive to match against. This is not case sensitive.
-     * @return
+     * @return a boolean indicating if the line mathes the directiveType
      */
     public static boolean isDirectiveMatch(String line, String directiveType) {
         Pattern directivePattern = Pattern.compile("^\\s*\\b" + directiveType + "\\b\\s+", Pattern.CASE_INSENSITIVE);
@@ -229,7 +229,7 @@ public class Parser {
      * 
      * @param line
      *            the line to match against
-     * @param Modules
+     * @param modules
      *            list of modules to compare against
      * @return true if the line matches a negate module
      */
@@ -253,7 +253,7 @@ public class Parser {
      * 
      * @param line
      *            the line to match against
-     * @param Modules
+     * @param modules
      *            list of modules to compare against
      * @return true if the line matches module
      */

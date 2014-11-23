@@ -76,6 +76,11 @@
             sourcepath="${source.dir}" 
             splitindex="true" 
             use="true" 
-            version="true"/>
+            version="true">
+        	
+        	<classpath refid="libraries.path"/>
+        	
+        </javadoc>	
+        	
     </target>
 </project>

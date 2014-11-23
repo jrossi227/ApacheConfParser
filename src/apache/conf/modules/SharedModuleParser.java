@@ -46,7 +46,7 @@ public class SharedModuleParser extends ModuleParser {
      * Function used to get a list of all Shared Modules.
      * 
      * @return an array of all Shared Modules.
-     * @throws Exception
+     * @throws Exception if there is an error obtaining modules
      * 
      */
     public SharedModule[] getSharedModules() throws Exception {

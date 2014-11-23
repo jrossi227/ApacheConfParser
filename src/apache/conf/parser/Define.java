@@ -10,7 +10,7 @@ public class Define {
     /**
      * The Define directive has the following format: Define SRVROOT "/Apache24"
      * 
-     * Defines gan be read in the configuration using the following: ServerRoot "${SRVROOT}"
+     * Defines can be read in the configuration using the following: ServerRoot "${SRVROOT}"
      * 
      */
 
