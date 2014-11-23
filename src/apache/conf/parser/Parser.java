@@ -69,7 +69,7 @@ public class Parser {
      * @param line
      *            the line to check for the directive type.
      * @param directiveType
-     *            the name of the directive to match against. This is not case sensitive.
+     *            the type of the directive to match against. This is not case sensitive.
      * @return a boolean indicating if the line mathes the directiveType
      */
     public static boolean isDirectiveMatch(String line, String directiveType) {
@@ -78,10 +78,10 @@ public class Parser {
     }
 
     /**
-     * Utility used to check if a line matches an VirtualHost <br/>
+     * Utility used to check if a line matches a VirtualHost <br/>
      * <br/>
      * Example :<br/>
-     * &lt;/VirtualHost&gt;
+     * &lt;VirtualHost *:80&gt;
      * 
      * @param line
      *            the line to match against
@@ -93,7 +93,7 @@ public class Parser {
     }
 
     /**
-     * Utility used to check for a VirtualHost Close declaration<br/>
+     * Utility used to check if a line matches a VirtualHost Close declaration<br/>
      * <br/>
      * Example :<br/>
      * &lt;/VirtualHost&gt;
@@ -138,7 +138,7 @@ public class Parser {
     }
 
     /**
-     * Utility used to check for an IfModule Close declaration<br/>
+     * Utility used to check if a line matches an IfModule Close declaration<br/>
      * <br/>
      * Example :<br/>
      * &lt;/ifmodule&gt;
@@ -153,7 +153,7 @@ public class Parser {
     }
 
     /**
-     * Utility used to check if a line matches an enclosure.
+     * Utility used to check if a line matches an enclosure with a specified type.
      * 
      * @param line
      *            the line to match against the enclosure.
@@ -167,7 +167,7 @@ public class Parser {
     }
 
     /**
-     * Utility used to check if a line matches a closing enclosure.
+     * Utility used to check if a line matches a closing enclosure with a specified type.
      * 
      * @param line
      *            the line to match against the closing enclosure.
@@ -221,11 +221,11 @@ public class Parser {
     }
 
     /**
-     * Checks for the negate ifmodule
+     * Checks if a line has a valid ifmodule that does not belong to a loaded apache module<br/>
      * 
-     * <IfModule !module-file|!module-identifier> ... </IfModule>
-     * 
-     * eg. <IfModule !mpm_winnt_module> <IfModule !mod_ssl.c>
+     * <br/>
+     * Example:<br/> 
+     * &lt;IfModule !mpm_winnt_module&gt; or &lt;IfModule !mod_ssl.c&gt;
      * 
      * @param line
      *            the line to match against
@@ -245,11 +245,11 @@ public class Parser {
     }
 
     /**
-     * Checks for the ifmodule
+     * Checks if a line has a valid ifmodule that belongs to a loaded apache module<br/>
      * 
-     * <IfModule module-file|module-identifier> ... </IfModule>
-     * 
-     * eg. <IfModule mpm_winnt_module> <IfModule mod_ssl.c>
+     * <br/>
+     * Example:<br/>
+     * &lt;IfModule mpm_winnt_module&gt; or &lt;IfModule mod_ssl.c&gt;
      * 
      * @param line
      *            the line to match against

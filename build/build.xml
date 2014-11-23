@@ -72,15 +72,25 @@
             notree="false" 
             packagenames="apache.conf.modules" 
             source="1.6" 
-            sourcefiles="${source.dir}/apache/conf/parser/File.java,${source.dir}/apache/conf/parser/Directive.java,${source.dir}/apache/conf/parser/Enclosure.java,${source.dir}/apache/conf/parser/DirectiveParser.java,${source.dir}/apache/conf/parser/ParsableLine.java,${source.dir}/apache/conf/parser/EnclosureParser.java,${source.dir}/apache/conf/parser/Parser.java" 
+            
+            sourcefiles=
+            "${source.dir}/apache/conf/parser/File.java,
+            ${source.dir}/apache/conf/parser/Directive.java,
+            ${source.dir}/apache/conf/parser/Enclosure.java,
+            ${source.dir}/apache/conf/parser/DirectiveParser.java,
+            ${source.dir}/apache/conf/parser/ParsableLine.java,
+            ${source.dir}/apache/conf/parser/EnclosureParser.java,
+            ${source.dir}/apache/conf/parser/Parser.java,
+            ${source.dir}/apache/conf/parser/ConfigurationLine.java" 
+            
             sourcepath="${source.dir}" 
             splitindex="true" 
             use="true" 
             version="true">
-        	
-        	<classpath refid="libraries.path"/>
-        	
-        </javadoc>	
-        	
+            
+            <classpath refid="libraries.path"/>
+            
+        </javadoc>    
+            
     </target>
 </project>

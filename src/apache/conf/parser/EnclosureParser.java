@@ -42,7 +42,7 @@ public class EnclosureParser extends Parser {
      *            The enclosure name. This is not case sensitive.
      * @param includeVHosts
      *            flag to indicate whether to include enclosures in VirtualHosts
-     * @return gets all the matching Enclosures in an array.
+     * @return An array with all matching enclosures.
      * @throws Exception
      */
     public Enclosure[] getEnclosure(String enclosureType, boolean includeVHosts) throws Exception {
