@@ -33,3 +33,13 @@ The following steps can be used to generate JavaDoc for the library.
 
 javadoc should be generated under *doc*
 
+Code Samples
+------------------------
+
+You can view code samples [here](https://github.com/jrossi227/ApacheConfParser/wiki/Code-Samples)
+
+Jar Usage
+------------------------
+
+The generated jar is a Runnable jar file. You can view details on running the jar [here](https://github.com/jrossi227/ApacheConfParser/wiki/Runnable-Jar-Usage). 
+
