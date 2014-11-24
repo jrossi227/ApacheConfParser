@@ -7,8 +7,12 @@ import apache.conf.global.Utils;
 
 /**
  * 
+ * <p>
  * This class provides an extension of the built in java.io.File class. It has been extended to normalize file paths on Windows.
- *
+ * </p>
+ * <p>
+ * For Example the absolute or canonical path on Windows will be converted from C:\\Apache24 to C://Apache24
+ * </p>
  */
 public class File extends java.io.File {
 

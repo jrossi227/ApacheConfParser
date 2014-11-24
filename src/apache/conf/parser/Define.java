@@ -31,7 +31,7 @@ public class Define {
      *
      * 
      * @param directiveValue
-     *            - A String with a valid apache Define directive value
+     *            A String with a valid apache Define directive value
      */
     public Define(String directiveValue) {
         directiveValue = Utils.sanitizeLineSpaces(directiveValue);

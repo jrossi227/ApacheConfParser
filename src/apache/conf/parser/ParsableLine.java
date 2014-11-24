@@ -23,6 +23,10 @@ public class ParsableLine {
         this.configurationLine = configurationLine;
     }
 
+    /**
+     * 
+     * @return true if the line is used in the configuration, false otherwise
+     */
     public boolean isInclude() {
         return include;
     }

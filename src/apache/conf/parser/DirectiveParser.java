@@ -126,9 +126,9 @@ public class DirectiveParser extends Parser {
      * @param directiveString
      *            The directive string to insert.
      * @param before
-     *            a boolean indicating whether the directiveString should be inserted before the first found directive. true for before,false for after.
+     *            a boolean indicating whether the directiveString should be inserted before the first found directive. true for before, false for after.
      * @param includeVHosts
-     *            flag to indicate whether to include directives inside VirtualHosts
+     *            flag to indicate whether to search for directives inside VirtualHosts
      * @return a boolean indicating if the directive was found.
      * @throws Exception
      */
@@ -138,7 +138,7 @@ public class DirectiveParser extends Parser {
 
     /**
      * <p>
-     * Inserts a directive string before or after the first found matching directive type and matches the matchesPattern.
+     * Inserts a directive string before or after the first found matching directive type and has a value that matches the matchesPattern.
      * </p>
      * <p>
      * For Example: <br/>
@@ -153,9 +153,9 @@ public class DirectiveParser extends Parser {
      * @param matchesPattern
      *            A filter that is used to check whether or not the directive matches a certain pattern.
      * @param before
-     *            a boolean indicating whether the directiveString should be inserted before the first found directive. true for before,false for after.
+     *            a boolean indicating whether the directiveString should be inserted before or after the first found directive. true for before, false for after.
      * @param includeVHosts
-     *            flag to indicate whether to include directives in VirtualHosts
+     *            flag to indicate whether to search for directives inside VirtualHosts
      * @return a boolean indicating if the directive was found.
      *
      * @throws Exception
@@ -221,7 +221,7 @@ public class DirectiveParser extends Parser {
      *            The pattern to match against the directive value.
      * @param includeVHosts
      *            flag to indicate whether to include directives in VirtualHosts
-     * @return the first file that matches the directive value combination or null if no file is found.
+     * @return the first file that matches the directive type and pattern combination or null if no file is found.
      * @throws Exception
      */
     public String getDirectiveFile(String directiveType, Pattern matchesPattern, boolean includeVHosts) throws Exception {
@@ -256,7 +256,7 @@ public class DirectiveParser extends Parser {
      * @param commentOut
      *            a boolean indicating if the directive should be commented out rather than completely removed from the file. true to comment out, false to remove.
      * @param includeVHosts
-     *            flag to indicate whether to include directives in VirtualHosts
+     *            flag to indicate whether to search for directives inside VirtualHosts
      * @return a boolean indicating if the directive was found.
      *
      * @throws Exception
@@ -299,7 +299,7 @@ public class DirectiveParser extends Parser {
     }
 
     /**
-     * Goes through the target file and replaces the value of the passed in directive type with the insertValue.
+     * Goes through the target file and replaces the value of any directives that match the directiveType and matchesPattern with the passed in insertValue.
      * 
      * @param directiveType
      *            The directive type. This is not case sensitive.
@@ -312,7 +312,7 @@ public class DirectiveParser extends Parser {
      * @param add
      *            Specifies whether we should add the directive to the file if it doesn't exist. true to add, false otherwise.
      * @param includeVHosts
-     *            flag to indicate whether to include directives in VirtualHosts            
+     *            flag to indicate whether to search for directives inside VirtualHosts            
      * @throws Exception
      */
     public void setDirectiveInFile(String directiveType, String file, String insertValue, Pattern matchesPattern, boolean add, boolean includeVHosts) throws Exception {

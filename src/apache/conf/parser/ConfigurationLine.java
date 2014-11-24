@@ -15,7 +15,7 @@ public class ConfigurationLine {
     }
 
     /**
-     * @return the line
+     * @return the unmodified line from the apache configuration
      */
     public String getLine() {
         return line;
@@ -30,7 +30,7 @@ public class ConfigurationLine {
     }
 
     /**
-     * @return the processedLine
+     * @return the processedLine from the configuration. Leading and trailing whitespace will be removed and multiple spaces and tabs will be replaced with a single space in the processed line.
      */
     public String getProcessedLine() {
         return processedLine;
@@ -45,7 +45,7 @@ public class ConfigurationLine {
     }
 
     /**
-     * @return the file
+     * @return the file that contains the configuration line.
      */
     public String getFile() {
         return file;
@@ -60,7 +60,7 @@ public class ConfigurationLine {
     }
 
     /**
-     * @return the lineNumInFile
+     * @return the line number of the configuration line inside of the containing file.
      */
     public int getLineNumInFile() {
         return lineNumInFile;

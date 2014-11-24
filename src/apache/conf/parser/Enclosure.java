@@ -115,14 +115,26 @@ public class Enclosure {
         this.enclosures.add(enclosure);
     }
 
+    /**
+     * 
+     * @return the File object that contains the enclosure
+     */
     public File getFile() {
         return file;
     }
 
+    /**
+     * 
+     * @return the starting line number of the enclosure inside of the file containing the enclosure 
+     */
     public int getLineOfStart() {
         return lineOfStart;
     }
 
+    /**
+     * 
+     * @return the ending line number of the enclosure inside of the file containing the enclosure 
+     */
     public int getLineOfEnd() {
         return lineOfEnd;
     }
@@ -135,10 +147,18 @@ public class Enclosure {
         return value;
     }
 
+    /**
+     * 
+     * @return a list of nested enclosures
+     */
     public Enclosure[] getEnclosures() {
         return enclosures.toArray(new Enclosure[enclosures.size()]);
     }
 
+    /**
+     * 
+     * @return a list of directives inside of the enclosure
+     */
     public Directive[] getDirectives() {
         return directives.toArray(new Directive[directives.size()]);
     }
