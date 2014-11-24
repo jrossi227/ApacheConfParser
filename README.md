@@ -2,6 +2,10 @@ ApacheConfParser
 =====================
 The ApacheConfParser provides a java library that is used to read the Apache http server configuration.
 
+Current Jar
+---------------------
+The current jar file can be found under the *dist* directory of this project.
+
 Development Environment
 ----------------------
 The ApacheConfParser source code is currently structured as an Eclipse java project. It can be imported to Eclipse using the EGit Eclipse plugin.
