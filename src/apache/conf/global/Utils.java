@@ -28,7 +28,9 @@ public class Utils {
      * Reads an input file and returns a String.
      * 
      * @param file
-     *            - the file to read.
+     *            the file to read
+     * @param charset
+     *            the charset to use when reading the file
      * @return a String with the file contents.
      * @throws java.io.IOException
      */
@@ -40,9 +42,9 @@ public class Utils {
      * Utility to copy one file to another.
      * 
      * @param source
-     *            - the absolute path to the source file.
+     *            the file to be copied
      * @param destination
-     *            - the absolute path to the destination file.
+     *            the destination directory
      * @return a boolean indicating if the file was successfully copied.
      */
     public static boolean copyFile(File source, File destination) {
@@ -62,9 +64,9 @@ public class Utils {
      * A utility to move files.
      * 
      * @param source
-     *            - The absolute path to the source file.
+     *            the file to be moved
      * @param destination
-     *            - The absolute path to the destination file.
+     *            the destination directory
      * @return a boolean indicating if the file was successfully moved.
      * @throws Exception
      *             if the file can't be moved.
@@ -92,9 +94,9 @@ public class Utils {
      * Copies one directory to another
      * 
      * @param srcDir
-     *            - The source directory.
-     * @param dstDir
-     *            - The destination directory.
+     *            the source directory.
+     * @param destDir
+     *            the destination directory.
      * @throws InterruptedException
      * @return a boolean indicating if the directory was successfully copied.
      * @throws IOException
@@ -134,9 +136,9 @@ public class Utils {
      * Utility to move a directory
      * 
      * @param srcDir
-     *            - The source directory to move.
-     * @param dstDir
-     *            - The destination directory.
+     *            the source directory to move.
+     * @param destDir
+     *            the destination directory.
      * @return a boolean indicating if the directory was successfully moved.
      * @throws InterruptedException
      * @throws IOException
@@ -162,8 +164,8 @@ public class Utils {
      * Appends a list of all files contained in a directory. This search is recursive and all child directories will be parsed. This method does not return directories.
      * 
      * @param directory
-     *            - The directory to parse.
-     * @return A list of all files contained in the directory and any sub directories.
+     *            the directory to parse.
+     * @return a list of all files contained in the directory and any sub directories.
      * @throws IOException
      */
     public static String[] getFileList(File directory) throws IOException {
@@ -174,14 +176,15 @@ public class Utils {
      * Appends a list of all files contained in a directory. This search is recursive and all child directories will be parsed. This method does not return directories.
      * 
      * @param directory
-     *            - The directory to parse.
+     *            the directory to parse.
      * @param fileNameRegex
-     *            - a regex used to match against filenames
-     * @return A list of all files contained in the directory and any sub directories.
+     *            a regex used to match against filenames
+     * @return a list of all files contained in the directory and any sub directories.
      * @throws IOException
      */
     public static String[] getFileList(File directory, String fileNameRegex) throws IOException {
-        // Breadth first search
+        
+        //----------- BREADTH FIRST SEARCH------------------//
 
         Queue<File> queue = new LinkedList<File>();
         queue.add(directory);
@@ -208,10 +211,10 @@ public class Utils {
     }
 
     /**
-     * Utilitiy used to remove duplicates from a list.
+     * Utilitiy used to remove duplicates from a list. This method does not maintain the list order.
      * 
      * @param a
-     *            - The input list.
+     *            The input list.
      */
     public static void removeDuplicates(ArrayList a) {
         HashSet hs = new HashSet();
@@ -220,7 +223,12 @@ public class Utils {
         a.addAll(hs);
     }
 
-    /** List order maintained **/
+    /**
+     * Utilitiy used to remove duplicates from a list. This method does maintain the list order.
+     * 
+     * @param arlList
+     *            The input list.
+     */
     public static void removeDuplicateWithOrder(ArrayList arlList) {
         Set set = new HashSet();
         List newList = new ArrayList();
@@ -237,9 +245,10 @@ public class Utils {
      * Utility used to see if a directory is a sub directory of another directory.
      * 
      * @param base
-     *            - The sub directory.
+     *           the sub directory.
      * @param child
-     * @return
+     *           the target directory 
+     * @return true if base is a sub directory of child
      * @throws IOException
      */
     public static boolean isSubDirectory(File base, File child) throws IOException {
@@ -260,9 +269,9 @@ public class Utils {
      * Matches an input user agent with a regex. This is not case sensitive.
      * 
      * @param userAgent
-     *            - The input user agent to match.
+     *            the input user agent to match.
      * @param userAgentRegex
-     *            - A regex to compare with the input user agent.
+     *            a regex to compare with the input user agent.
      * @return a boolean indicating if the user agent matches the regex.
      */
     public static boolean matchUserAgent(String userAgent, String userAgentRegex) {
@@ -280,7 +289,7 @@ public class Utils {
      * Executes a system command. No output is needed.
      * 
      * @param command
-     *            - The command to execute.
+     *            the command to execute.
      * @throws IOException
      * @throws InterruptedException
      */
@@ -290,10 +299,10 @@ public class Utils {
     }
 
     /**
-     * Executes a system command and receive the output.
+     * Executes a system command and returns the output.
      * 
      * @param command
-     *            - The command to execute.
+     *            the command to execute.
      * @return the OS output from the command.
      * @throws IOException
      * @throws InterruptedException
@@ -326,7 +335,11 @@ public class Utils {
      * Writes a StringBuffer to a file. If the file already exists it will be overwritten.
      * 
      * @param file
+     *            the file to write to
      * @param buffer
+     *            the content to write to the file
+     * @param charset
+     *            the charset to use when writing to the file
      * @throws IOException
      */
     public static void writeStringBufferToFile(File file, StringBuffer buffer, Charset charset) throws IOException {
@@ -343,7 +356,7 @@ public class Utils {
      * Set file and directory permissions for reading and writing
      * 
      * @param file
-     *            the absolute path to the file
+     *            the file to set permissions on
      * @throws IOException
      * @throws InterruptedException
      */
@@ -364,14 +377,29 @@ public class Utils {
         }
     }
 
+    /**
+     * Replaces all tabs and multiple spaces with a single space
+     * 
+     * @param line
+     *            the line to sanitize
+     * @return the sanitized line
+     */
     public static String sanitizeLineSpaces(String line) {
         return line.replaceAll("\\s+", " ").trim();
     }
 
+    /**
+     * 
+     * @return true if the OS is Windows, false otherwise
+     */
     public static boolean isWindows() {
         return (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0);
     }
 
+    /**
+     * 
+     * @return the java version
+     */
     public static double getJavaVersion() {
         return Double.parseDouble(System.getProperty("java.specification.version"));
     }
