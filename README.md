@@ -42,6 +42,11 @@ Code Samples
 
 You can view code samples [here](https://github.com/jrossi227/ApacheConfParser/wiki/Code-Samples)
 
+API Docs
+------------------------
+
+API Docs are available [here](https://github.com/jrossi227/ApacheConfParser/wiki/API-Docs)
+
 Jar Usage
 ------------------------
 
