@@ -68,7 +68,10 @@ public class DirectiveParser extends Parser {
                 String addDirective = "";
 
                 if (!isCommentMatch(strLine) && isDirectiveMatch(strLine, directiveType)) {
-                    directiveValues = strLine.replaceAll("(\\s+)|(\\s*,\\s*)", "@@").replaceAll("\"", "").split("@@");
+                    strLine = strLine.replaceAll("(\\s*,\\s*)", ",");
+                    strLine = strLine.replaceAll("\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)", "@@");
+                    
+                    directiveValues = strLine.split("@@");
                     for (int i = 1; i < directiveValues.length; i++) {
                         addDirective += " " + directiveValues[i];
                     }

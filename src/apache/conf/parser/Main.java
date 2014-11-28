@@ -103,7 +103,7 @@ public class Main {
             StaticModuleParser staticParser = new StaticModuleParser(new File(binFile));
             SharedModuleParser sharedParser = new SharedModuleParser(new File(binFile));
 
-            String results = "Results (commas and quotations will be removed from directive and enclosure values): \n\n";
+            String results = "Results : \n\n";
             if (option.equals("-d")) {
                 DirectiveParser parser = new DirectiveParser(rootConfFile, serverRoot, staticParser.getStaticModules(), sharedParser.getSharedModules());
 

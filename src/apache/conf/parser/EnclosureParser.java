@@ -102,7 +102,11 @@ public class EnclosureParser extends Parser {
             strLine = parsableLine.getConfigurationLine().getProcessedLine();
 
             if (iter == 1) {
-                String enclosureValues[] = strLine.replaceAll("\"|>|<", "").trim().replaceAll("\\s+|,", "@@").split("@@");
+                strLine = strLine.replaceAll("\"|>|<", "");
+                strLine = strLine.replaceAll("(\\s*,\\s*)", ",");
+                strLine = strLine.replaceAll("\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)", "@@");
+                
+                String enclosureValues[] = strLine.split("@@");
                 enclosure.setType(enclosureValues[0]);
                 StringBuffer enclosureValue = new StringBuffer();
                 for (int j = 1; j < enclosureValues.length; j++) {
@@ -132,7 +136,12 @@ public class EnclosureParser extends Parser {
                         }
                     }
                 } else if (!isCommentMatch(strLine) && !isCloseEnclosureMatch(strLine)) {
-                    String directiveValues[] = strLine.replaceAll("\\s+|,", "@@").replaceAll("\"", "").split("@@");
+                    
+                    strLine = strLine.replaceAll("(\\s*,\\s*)", ",");
+                    strLine = strLine.replaceAll("\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)", "@@");
+                    
+                    String directiveValues[] = strLine.split("@@");
+                    
                     Directive directive = new Directive(directiveValues[0]);
                     for (int j = 1; j < directiveValues.length; j++) {
                         directive.addValue(directiveValues[j]);
