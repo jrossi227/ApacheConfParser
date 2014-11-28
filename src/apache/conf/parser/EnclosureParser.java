@@ -103,8 +103,8 @@ public class EnclosureParser extends Parser {
 
             if (iter == 1) {
                 strLine = strLine.replaceAll("\"|>|<", "");
-                strLine = strLine.replaceAll("(\\s*,\\s*)", ",");
-                strLine = strLine.replaceAll("\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)", "@@");
+                strLine = strLine.replaceAll(Const.replaceCommaSpacesRegex, ",");
+                strLine = strLine.replaceAll(Const.replaceSpacesInValuesRegex, "@@");
                 
                 String enclosureValues[] = strLine.split("@@");
                 enclosure.setType(enclosureValues[0]);
@@ -137,8 +137,8 @@ public class EnclosureParser extends Parser {
                     }
                 } else if (!isCommentMatch(strLine) && !isCloseEnclosureMatch(strLine)) {
                     
-                    strLine = strLine.replaceAll("(\\s*,\\s*)", ",");
-                    strLine = strLine.replaceAll("\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)", "@@");
+                    strLine = strLine.replaceAll(Const.replaceCommaSpacesRegex, ",");
+                    strLine = strLine.replaceAll(Const.replaceSpacesInValuesRegex, "@@");
                     
                     String directiveValues[] = strLine.split("@@");
                     
