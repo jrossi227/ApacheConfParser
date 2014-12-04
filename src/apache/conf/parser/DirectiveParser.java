@@ -57,7 +57,8 @@ public class DirectiveParser extends Parser {
             if (line.isInclude()) {
 
                 strLine = line.getConfigurationLine().getProcessedLine();
-
+                System.out.println(strLine);
+                
                 String directiveValueList[];
                 Directive addDirective;
 
@@ -72,7 +73,8 @@ public class DirectiveParser extends Parser {
                         addDirective.addValue(directiveValueList[i]);
                     }
                     addDirective.setFile(new File(line.getConfigurationLine().getFile()));
-                    addDirective.setLineNum(line.getConfigurationLine().getLineNumInFile());
+                    addDirective.setLineOfStart(line.getConfigurationLine().getLineOfStart());
+                    addDirective.setLineOfEnd(line.getConfigurationLine().getLineOfEnd());
 
                     directives.add(addDirective);
                 }

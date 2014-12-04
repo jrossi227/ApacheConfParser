@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import apache.conf.global.Const;
 import apache.conf.global.Utils;
 import apache.conf.modules.Module;
 import apache.conf.modules.SharedModule;
@@ -268,6 +269,16 @@ public class Parser {
         return false;
     }
 
+    private String processConfigurationLine(String line, Define defines[]) {
+        
+        // Replace multi line with a space
+        String processedLine = line.replaceAll("\\\\\\s*" + Const.newLine," ");
+        
+        processedLine = Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(line));
+        
+        return processedLine;
+    }
+    
     private ConfigurationLine[] getConfigurationLines(String confFile, boolean loadDefines) throws Exception {
 
         Define defines[];
@@ -297,16 +308,17 @@ public class Parser {
                 lineNumInFile++;
 
                 currentConcatLineNum = (currentConcatLineNum == -1 ? lineNumInFile : currentConcatLineNum);
+                concatLine += strLine;
+                
+                // Multiline configuration line
                 if(strLine.trim().endsWith("\\")) {
-                    concatLine += (strLine.trim().substring(0, strLine.trim().length() -1) + " ");
+                    concatLine += Const.newLine;
                     continue;
-                } else {
-                    concatLine += strLine;
-                }
+                } 
                 
-                cmpLine = Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(concatLine));
+                cmpLine = processConfigurationLine(concatLine, defines);
                 
-                configurationLines.add(new ConfigurationLine(concatLine, cmpLine, confFile, currentConcatLineNum));
+                configurationLines.add(new ConfigurationLine(concatLine, cmpLine, confFile, currentConcatLineNum, lineNumInFile));
 
                 concatLine = "";
                 currentConcatLineNum = -1;

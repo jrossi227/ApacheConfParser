@@ -109,7 +109,7 @@ public class Main {
 
                 Directive directives[] = parser.getDirective(directiveName, true);
                 for (int i = 0; i < directives.length; i++) {
-                    results += "\nLine: " + directives[i].getLineNum() + " File: " + directives[i].getFile().getAbsolutePath() + "\n";
+                    results += "\nLine: " + directives[i].getLineOfStart() + " File: " + directives[i].getFile().getAbsolutePath() + "\n";
                     results += directives[i].toString() + "\n";
                 }
             }
@@ -263,13 +263,13 @@ public class Main {
             if (clean) {
 
                 if (line.isInclude()) {
-                    out = configurationLine.getProcessedLine() + " File: " + configurationLine.getFile() + " Line Number: " + configurationLine.getLineNumInFile();
+                    out = configurationLine.getProcessedLine() + " File: " + configurationLine.getFile() + " Line Number: " + configurationLine.getLineOfStart();
                 } else {
                     continue;
                 }
 
             } else {
-                out = configurationLine.getLine() + " File: " + configurationLine.getFile() + " Line Number: " + configurationLine.getLineNumInFile();
+                out = configurationLine.getLine() + " File: " + configurationLine.getFile() + " Line Number: " + configurationLine.getLineOfStart();
             }
 
             System.out.println(out);

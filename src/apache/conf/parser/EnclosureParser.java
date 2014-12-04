@@ -113,8 +113,8 @@ public class EnclosureParser extends Parser {
                     enclosureValue.append(enclosureValues[j] + " ");
                 }
                 enclosure.setValue(enclosureValue.toString().trim());
-                enclosure.setLineOfStart(parsableLine.getConfigurationLine().getLineNumInFile());
-                enclosure.setLineOfEnd(parsableLines[parsableLines.length - 1].getConfigurationLine().getLineNumInFile());
+                enclosure.setLineOfStart(parsableLine.getConfigurationLine().getLineOfStart());
+                enclosure.setLineOfEnd(parsableLines[parsableLines.length - 1].getConfigurationLine().getLineOfEnd());
                 enclosure.setFile(new File(parsableLine.getConfigurationLine().getFile()));
             } else {
                 if (!isCommentMatch(strLine) && isEnclosureMatch(strLine)) {

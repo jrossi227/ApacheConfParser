@@ -17,27 +17,31 @@ public class Directive {
     private String type;
     private ArrayList<String> values;
     private File file;
-    private int lineNum;
+    private int lineOfStart;
+    private int lineOfEnd;
 
     public Directive(String type) {
         this.type = type;
         this.values = new ArrayList<String>();
         this.file = null;
-        this.lineNum = -1;
+        this.lineOfStart = -1;
+        this.lineOfEnd = -1;
     }
 
     public Directive(String type, String values[]) {
         this.type = type;
         this.values = (ArrayList<String>) Arrays.asList(values);
         this.file = null;
-        this.lineNum = -1;
+        this.lineOfStart = -1;
+        this.lineOfEnd = -1;
     }
     
-    public Directive(String type, String values[], File file, int lineNum) {
+    public Directive(String type, String values[], File file, int lineOfStart, int lineOfEnd) {
         this.type = type;
         this.values = (ArrayList<String>) Arrays.asList(values);
         this.file = file;
-        this.lineNum = lineNum;
+        this.lineOfStart = -1;
+        this.lineOfEnd = -1;
     }
 
     public String getType() {
@@ -60,12 +64,20 @@ public class Directive {
         this.file = file;
     }
 
-    public int getLineNum() {
-        return lineNum;
+    public int getLineOfStart() {
+        return lineOfStart;
     }
 
-    public void setLineNum(int lineNum) {
-        this.lineNum = lineNum;
+    public void setLineOfStart(int lineOfStart) {
+        this.lineOfStart = lineOfStart;
+    }
+
+    public int getLineOfEnd() {
+        return lineOfEnd;
+    }
+
+    public void setLineOfEnd(int lineOfEnd) {
+        this.lineOfEnd = lineOfEnd;
     }
 
     public String toString() {

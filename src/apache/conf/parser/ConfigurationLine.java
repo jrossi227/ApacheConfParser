@@ -5,13 +5,15 @@ public class ConfigurationLine {
     private String line;
     private String processedLine;
     private String file;
-    private int lineNumInFile;
+    private int lineOfStart;
+    private int lineOfEnd;
 
-    public ConfigurationLine(String line, String processedLine, String file, int lineNumInFile) {
+    public ConfigurationLine(String line, String processedLine, String file, int lineOfStart, int lineOfEnd) {
         this.line = line;
         this.processedLine = processedLine;
         this.file = file;
-        this.lineNumInFile = lineNumInFile;
+        this.lineOfStart = lineOfStart;
+        this.lineOfEnd = lineOfEnd;
     }
 
     /**
@@ -60,18 +62,27 @@ public class ConfigurationLine {
     }
 
     /**
-     * @return the line number of the configuration line inside of the containing file.
+     * 
+     * @return
      */
-    public int getLineNumInFile() {
-        return lineNumInFile;
+    public int getLineOfStart() {
+        return lineOfStart;
     }
 
     /**
-     * @param lineNumInFile
-     *            the lineNumInFile to set
+     * 
+     * @param lineOfStart
      */
-    public void setLineNumInFile(int lineNumInFile) {
-        this.lineNumInFile = lineNumInFile;
+    public void setLineOfStart(int lineOfStart) {
+        this.lineOfStart = lineOfStart;
+    }
+
+    public int getLineOfEnd() {
+        return lineOfEnd;
+    }
+
+    public void setLineOfEnd(int lineOfEnd) {
+        this.lineOfEnd = lineOfEnd;
     }
 
 }
