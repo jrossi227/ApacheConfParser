@@ -32,6 +32,58 @@ public class DirectiveParser extends Parser {
 
     /**
      * <p>
+     * Parses all active configuration files for the directive specified by directiveType.
+     * </p>
+     * 
+     * @param directiveType
+     *            The directive name. This is not case sensitive.
+     * @param includeVHosts
+     *            flag to indicate whether to include directives inside VirtualHosts
+     * @return an array with all instances of the directive.
+     * @throws Exception
+     */
+    public Directive[] getDirective(String directiveType, boolean includeVHosts) throws Exception {
+
+        ArrayList<Directive> directives = new ArrayList<Directive>();
+
+        boolean loadDefines = true;
+        if (directiveType.equals(Const.defineDirective)) {
+            loadDefines = false;
+        }
+
+        ParsableLine lines[] = getConfigurationParsableLines(loadDefines, includeVHosts);
+        String strLine = "";
+        for (ParsableLine line : lines) {
+            if (line.isInclude()) {
+
+                strLine = line.getConfigurationLine().getProcessedLine();
+
+                String directiveValueList[];
+                Directive addDirective;
+
+                if (!isCommentMatch(strLine) && isDirectiveMatch(strLine, directiveType)) {
+                    strLine = strLine.replaceAll(Const.replaceCommaSpacesRegex, ",");
+                    strLine = strLine.replaceAll(Const.replaceSpacesInValuesRegex, "@@");
+
+                    addDirective = new Directive(directiveType);
+
+                    directiveValueList = strLine.split("@@");
+                    for (int i = 1; i < directiveValueList.length; i++) {
+                        addDirective.addValue(directiveValueList[i]);
+                    }
+                    addDirective.setFile(new File(line.getConfigurationLine().getFile()));
+                    addDirective.setLineNum(line.getConfigurationLine().getLineNumInFile());
+
+                    directives.add(addDirective);
+                }
+            }
+        }
+
+        return directives.toArray(new Directive[directives.size()]);
+    }
+
+    /**
+     * <p>
      * Parses all active configuration files for the directive values specified by directiveType.
      * </p>
      * <p>
@@ -49,70 +101,25 @@ public class DirectiveParser extends Parser {
      * @throws Exception
      */
     public String[] getDirectiveValue(String directiveType, boolean includeVHosts) throws Exception {
+        ArrayList<String> directiveValues = new ArrayList<String>();
+        Directive directives[] = getDirective(directiveType, includeVHosts);
 
-        ArrayList<String> directives = new ArrayList<String>();
+        String directiveValueList[];
+        String values;
 
-        boolean loadDefines = true;
-        if (directiveType.equals(Const.defineDirective)) {
-            loadDefines = false;
-        }
+        for (Directive directive : directives) {
 
-        ParsableLine lines[] = getConfigurationParsableLines(loadDefines, includeVHosts);
-        String strLine = "";
-        for (ParsableLine line : lines) {
-            if (line.isInclude()) {
+            directiveValueList = directive.getValues();
 
-                strLine = line.getConfigurationLine().getProcessedLine();
-
-                String directiveValues[];
-                String addDirective = "";
-
-                if (!isCommentMatch(strLine) && isDirectiveMatch(strLine, directiveType)) {
-                    strLine = strLine.replaceAll(Const.replaceCommaSpacesRegex, ",");
-                    strLine = strLine.replaceAll(Const.replaceSpacesInValuesRegex, "@@");
-                    
-                    directiveValues = strLine.split("@@");
-                    for (int i = 1; i < directiveValues.length; i++) {
-                        addDirective += " " + directiveValues[i];
-                    }
-                    directives.add(addDirective.trim());
-                }
+            values = "";
+            for (String directiveValue : directiveValueList) {
+                values += directiveValue + " ";
             }
+
+            directiveValues.add(values.trim());
         }
 
-        return directives.toArray(new String[directives.size()]);
-    }
-
-    /**
-     * <p>
-     * Parses all active configuration files for the directive specified by directiveType.
-     * </p>
-     * 
-     * @param directiveType
-     *            The directive name. This is not case sensitive.
-     * @param includeVHosts
-     *            flag to indicate whether to include directives inside VirtualHosts
-     * @return an array with all instances of the directive.
-     * @throws Exception
-     */
-    public Directive[] getDirective(String directiveType, boolean includeVHosts) throws Exception {
-        ArrayList<Directive> directives = new ArrayList<Directive>();
-        String values[] = getDirectiveValue(directiveType, includeVHosts);
-
-        String directiveValues[];
-        Directive addDirective;
-
-        for (String value : values) {
-
-            directiveValues = value.split(" ");
-            addDirective = new Directive(directiveType);
-            for (String directiveValue : directiveValues) {
-                addDirective.addValue(directiveValue);
-            }
-            directives.add(addDirective);
-        }
-
-        return directives.toArray(new Directive[directives.size()]);
+        return directiveValues.toArray(new String[directiveValues.size()]);
     }
 
     /**

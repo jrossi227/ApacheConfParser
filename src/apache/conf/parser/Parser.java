@@ -290,16 +290,27 @@ public class Parser {
 
         try {
 
-            String strLine, cmpLine;
-            int lineNumInFile = 0;
+            String strLine, cmpLine, concatLine = "";
+            int lineNumInFile = 0, currentConcatLineNum = -1;
             while ((strLine = br.readLine()) != null) {
 
                 lineNumInFile++;
 
-                cmpLine = Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(strLine));
+                currentConcatLineNum = (currentConcatLineNum == -1 ? lineNumInFile : currentConcatLineNum);
+                if(strLine.trim().endsWith("\\")) {
+                    concatLine += (strLine.trim().substring(0, strLine.trim().length() -1) + " ");
+                    continue;
+                } else {
+                    concatLine += strLine;
+                }
+                
+                cmpLine = Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(concatLine));
+                
+                configurationLines.add(new ConfigurationLine(concatLine, cmpLine, confFile, currentConcatLineNum));
 
-                configurationLines.add(new ConfigurationLine(strLine, cmpLine, confFile, lineNumInFile));
-
+                concatLine = "";
+                currentConcatLineNum = -1;
+                
                 if (!isCommentMatch(cmpLine) && isIncludeMatch(cmpLine)) {
 
                     String file = getFileFromInclude(cmpLine);

@@ -109,6 +109,7 @@ public class Main {
 
                 Directive directives[] = parser.getDirective(directiveName, true);
                 for (int i = 0; i < directives.length; i++) {
+                    results += "\nLine: " + directives[i].getLineNum() + " File: " + directives[i].getFile().getAbsolutePath() + "\n";
                     results += directives[i].toString() + "\n";
                 }
             }
@@ -118,6 +119,7 @@ public class Main {
 
                 Enclosure enclosures[] = parser.getEnclosure(enclosureName, true);
                 for (int i = 0; i < enclosures.length; i++) {
+                    results += "\nLine: " + enclosures[i].getLineOfStart() + " File: " + enclosures[i].getFile().getAbsolutePath() + "\n";
                     results += enclosures[i].toString() + "\n";
                 }
             }
@@ -130,6 +132,7 @@ public class Main {
                     Directive directives[] = enclosures[i].getDirectives();
                     for (int j = 0; j < directives.length; j++) {
                         if (directives[j].getType().toLowerCase().equals(directiveName.toLowerCase())) {
+                            results += "\nLine: " + enclosures[i].getLineOfStart() + " File: " + enclosures[i].getFile().getAbsolutePath() + "\n";
                             results += enclosures[i].toString() + "\n";
                         }
                     }
