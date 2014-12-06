@@ -57,7 +57,6 @@ public class DirectiveParser extends Parser {
             if (line.isInclude()) {
 
                 strLine = line.getConfigurationLine().getProcessedLine();
-                System.out.println(strLine);
                 
                 String directiveValueList[];
                 Directive addDirective;

@@ -270,11 +270,10 @@ public class Parser {
     }
 
     private String processConfigurationLine(String line, Define defines[]) {
+              
+        String processedLine = line.replaceAll("\\s+\\\\\\s*" + Const.newLine, " "); 
         
-        // Replace multi line with a space
-        String processedLine = line.replaceAll("\\\\\\s*" + Const.newLine," ");
-        
-        processedLine = Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(line));
+        processedLine = Define.replaceDefinesInString(defines, Utils.sanitizeLineSpaces(processedLine));
         
         return processedLine;
     }
