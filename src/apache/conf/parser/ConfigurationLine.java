@@ -1,5 +1,22 @@
 package apache.conf.parser;
 
+/** 
+ * This class is used to model a configuration line from the Apache Configuration <br/>
+ * <br/>
+ * A configuration line consists of the following:<br/>
+ * line - The unmodified line(s) from the Apache Configuration. A configuration line may span multiple lines as long as the end of the line ends with a backslash<br/> 
+ * processed line - The processed configuration line. The following is done to process a configuration line:<br/>
+ * <br/>
+ * 1. Trim leading and trailing whitespace from the line.<br/>
+ * 2. Remove multiple spaces and tabs and replace them with one space.<br/>
+ * 3. If the configuration line spans multiple lines make it a single line.<br/>
+ * <br/>
+ * file - The file that contains the line<br/>
+ * lineOfStart - The line number inside of the file where the configuration line starts<br/>
+ * lineOfEnd - The line number insode of the file where the configuration line ends.<br/>
+ * 
+ */
+
 public class ConfigurationLine {
 
     private String line;
@@ -32,7 +49,7 @@ public class ConfigurationLine {
     }
 
     /**
-     * @return the processedLine from the configuration. Leading and trailing whitespace will be removed and multiple spaces and tabs will be replaced with a single space in the processed line.
+     * @return the processedLine from the configuration. 
      */
     public String getProcessedLine() {
         return processedLine;
@@ -77,12 +94,24 @@ public class ConfigurationLine {
         this.lineOfStart = lineOfStart;
     }
 
+    /**
+     * 
+     * @return lineOfEnd
+     */
     public int getLineOfEnd() {
         return lineOfEnd;
     }
 
+    /**
+     * 
+     * @param lineOfEnd
+     */
     public void setLineOfEnd(int lineOfEnd) {
         this.lineOfEnd = lineOfEnd;
     }
 
+    public boolean isMultiLine() {
+        return (lineOfStart != lineOfEnd);
+    }
+    
 }
