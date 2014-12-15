@@ -1,6 +1,6 @@
 ApacheConfParser
 =====================
-The ApacheConfParser provides a java library that is used to read the Apache http server configuration.
+The ApacheConfParser provides a java library that is used to read the Apache http server configuration. The library is currently used to power http://apachegui.net
 
 Current Jar
 ---------------------
