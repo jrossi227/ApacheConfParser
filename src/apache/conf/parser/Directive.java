@@ -16,32 +16,24 @@ import java.util.Arrays;
 public class Directive {
     private String type;
     private ArrayList<String> values;
-    private File file;
-    private int lineOfStart;
-    private int lineOfEnd;
+    private ConfigurationLine configurationLine;
 
     public Directive(String type) {
         this.type = type;
         this.values = new ArrayList<String>();
-        this.file = null;
-        this.lineOfStart = -1;
-        this.lineOfEnd = -1;
+        this.configurationLine = null;
     }
 
     public Directive(String type, String values[]) {
         this.type = type;
         this.values = (ArrayList<String>) Arrays.asList(values);
-        this.file = null;
-        this.lineOfStart = -1;
-        this.lineOfEnd = -1;
+        this.configurationLine = null;
     }
     
-    public Directive(String type, String values[], File file, int lineOfStart, int lineOfEnd) {
+    public Directive(String type, String values[], ConfigurationLine configurationLine) {
         this.type = type;
         this.values = (ArrayList<String>) Arrays.asList(values);
-        this.file = file;
-        this.lineOfStart = -1;
-        this.lineOfEnd = -1;
+        this.configurationLine = configurationLine;
     }
 
     public String getType() {
@@ -56,28 +48,12 @@ public class Directive {
         return values.toArray(new String[values.size()]);
     }
 
-    public File getFile() {
-        return file;
+    public ConfigurationLine getConfigurationLine() {
+        return configurationLine;
     }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-    public int getLineOfStart() {
-        return lineOfStart;
-    }
-
-    public void setLineOfStart(int lineOfStart) {
-        this.lineOfStart = lineOfStart;
-    }
-
-    public int getLineOfEnd() {
-        return lineOfEnd;
-    }
-
-    public void setLineOfEnd(int lineOfEnd) {
-        this.lineOfEnd = lineOfEnd;
+    
+    public void setConfigurationLine(ConfigurationLine configurationLine) {
+        this.configurationLine = configurationLine;
     }
 
     public String toString() {

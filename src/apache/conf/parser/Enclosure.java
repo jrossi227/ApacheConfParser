@@ -1,7 +1,6 @@
 package apache.conf.parser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import apache.conf.global.Const;
 
@@ -29,76 +28,20 @@ import apache.conf.global.Const;
  */
 
 public class Enclosure {
-    private File file;
-    private int lineOfStart;
-    private int lineOfEnd;
     private String type;
     private String value;
     private ArrayList<Directive> directives;
     private ArrayList<Enclosure> enclosures;
+    private ArrayList<ConfigurationLine> configurationLines;
 
     public Enclosure() {
-        this.file = null;
-        this.lineOfStart = -1;
-        this.lineOfEnd = -1;
         this.type = "";
         this.value = "";
-        directives = new ArrayList<Directive>();
+        this.directives = new ArrayList<Directive>();
         this.enclosures = new ArrayList<Enclosure>();
+        this.configurationLines = new ArrayList<ConfigurationLine>();
     }
-
-    public Enclosure(File file, int lineOfStart, int lineOfEnd, String type) {
-        this.file = file;
-        this.lineOfStart = lineOfStart;
-        this.lineOfEnd = lineOfEnd;
-        this.type = type;
-        this.value = "";
-        directives = new ArrayList<Directive>();
-        this.enclosures = new ArrayList<Enclosure>();
-    }
-
-    public Enclosure(File file, int lineOfStart, int lineOfEnd, String type, String value) {
-        this.file = file;
-        this.lineOfStart = lineOfStart;
-        this.lineOfEnd = lineOfEnd;
-        this.type = type;
-        this.value = value;
-        directives = new ArrayList<Directive>();
-        this.enclosures = new ArrayList<Enclosure>();
-    }
-
-    public Enclosure(File file, int lineOfStart, int lineOfEnd, String type, String value, Directive directives[]) {
-        this.file = file;
-        this.lineOfStart = lineOfStart;
-        this.lineOfEnd = lineOfEnd;
-        this.type = type;
-        this.value = value;
-        this.directives = (ArrayList<Directive>) Arrays.asList(directives);
-        this.enclosures = new ArrayList<Enclosure>();
-    }
-
-    public Enclosure(File file, int lineOfStart, int lineOfEnd, String type, String value, Directive directives[], Enclosure enclosures[]) {
-        this.file = file;
-        this.lineOfStart = lineOfStart;
-        this.lineOfEnd = lineOfEnd;
-        this.type = type;
-        this.value = value;
-        this.directives = (ArrayList<Directive>) Arrays.asList(directives);
-        this.enclosures = (ArrayList<Enclosure>) Arrays.asList(enclosures);
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-    public void setLineOfStart(int lineOfStart) {
-        this.lineOfStart = lineOfStart;
-    }
-
-    public void setLineOfEnd(int lineOfEnd) {
-        this.lineOfEnd = lineOfEnd;
-    }
-
+    
     public void setType(String type) {
         this.type = type;
     }
@@ -114,29 +57,9 @@ public class Enclosure {
     public void addEnclosure(Enclosure enclosure) {
         this.enclosures.add(enclosure);
     }
-
-    /**
-     * 
-     * @return the File object that contains the enclosure
-     */
-    public File getFile() {
-        return file;
-    }
-
-    /**
-     * 
-     * @return the starting line number of the enclosure inside of the file containing the enclosure 
-     */
-    public int getLineOfStart() {
-        return lineOfStart;
-    }
-
-    /**
-     * 
-     * @return the ending line number of the enclosure inside of the file containing the enclosure 
-     */
-    public int getLineOfEnd() {
-        return lineOfEnd;
+    
+    public void addConfigurationLine(ConfigurationLine configurationLine) {
+        this.configurationLines.add(configurationLine);
     }
 
     public String getType() {
@@ -147,22 +70,42 @@ public class Enclosure {
         return value;
     }
 
-    /**
-     * 
-     * @return a list of nested enclosures
-     */
     public Enclosure[] getEnclosures() {
         return enclosures.toArray(new Enclosure[enclosures.size()]);
     }
 
-    /**
-     * 
-     * @return a list of directives inside of the enclosure
-     */
     public Directive[] getDirectives() {
         return directives.toArray(new Directive[directives.size()]);
     }
 
+    public ConfigurationLine[] getConfigurationLines() {
+        return configurationLines.toArray(new ConfigurationLine[configurationLines.size()]);
+    }
+
+    public int getLineOfStart() {
+        if(this.configurationLines.size() == 0) {
+            return -1;
+        }
+        
+        return this.configurationLines.get(0).getLineOfStart();
+    }
+    
+    public int getLineOfEnd() {
+        if(this.configurationLines.size() == 0) {
+            return -1;
+        }
+        
+        return this.configurationLines.get(this.configurationLines.size()).getLineOfEnd();
+    }
+    
+    public String getFile() {
+        if(this.configurationLines.size() == 0) {
+            return null;
+        }
+        
+        return this.configurationLines.get(0).getFile();
+    }
+    
     public String toString() {
         StringBuffer enclosure = new StringBuffer();
         enclosure.append("<" + type + " " + value + ">" + Const.newLine);

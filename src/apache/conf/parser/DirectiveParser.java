@@ -71,9 +71,8 @@ public class DirectiveParser extends Parser {
                     for (int i = 1; i < directiveValueList.length; i++) {
                         addDirective.addValue(directiveValueList[i]);
                     }
-                    addDirective.setFile(new File(line.getConfigurationLine().getFile()));
-                    addDirective.setLineOfStart(line.getConfigurationLine().getLineOfStart());
-                    addDirective.setLineOfEnd(line.getConfigurationLine().getLineOfEnd());
+                    
+                    addDirective.setConfigurationLine(line.getConfigurationLine());
 
                     directives.add(addDirective);
                 }
