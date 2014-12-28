@@ -95,7 +95,7 @@ public class Enclosure {
             return -1;
         }
         
-        return this.configurationLines.get(this.configurationLines.size()).getLineOfEnd();
+        return this.configurationLines.get(this.configurationLines.size()-1).getLineOfEnd();
     }
     
     public String getFile() {
