@@ -30,6 +30,13 @@ public class DirectiveParser extends Parser {
         super(rootConfFile, serverRoot, staticModules, sharedModules);
     }
 
+    public static String[] extractDirectiveToParts(String line) {
+        String strLine = line.replaceAll(Const.replaceCommaSpacesRegex, ",");
+        strLine = strLine.replaceAll(Const.replaceSpacesInValuesRegex, "@@");
+    
+        return strLine.split("@@");
+    }
+    
     /**
      * <p>
      * Parses all active configuration files for the directive specified by directiveType.
@@ -62,12 +69,10 @@ public class DirectiveParser extends Parser {
                 Directive addDirective;
 
                 if (!isCommentMatch(strLine) && isDirectiveMatch(strLine, directiveType)) {
-                    strLine = strLine.replaceAll(Const.replaceCommaSpacesRegex, ",");
-                    strLine = strLine.replaceAll(Const.replaceSpacesInValuesRegex, "@@");
-
+                    
                     addDirective = new Directive(directiveType);
 
-                    directiveValueList = strLine.split("@@");
+                    directiveValueList = extractDirectiveToParts(strLine);
                     for (int i = 1; i < directiveValueList.length; i++) {
                         addDirective.addValue(directiveValueList[i]);
                     }

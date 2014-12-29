@@ -30,6 +30,14 @@ public class EnclosureParser extends Parser {
         super(rootConfFile, serverRoot, staticModules, sharedModules);
     }
 
+    public static String[] extractEnclosureToParts(String line) {
+        String strLine = line.replaceAll(">|<", "");
+        strLine = strLine.replaceAll(Const.replaceCommaSpacesRegex, ",");
+        strLine = strLine.replaceAll(Const.replaceSpacesInValuesRegex, "@@");
+        
+        return strLine.split("@@");
+    }
+    
     /**
      * <p>
      * Parses all active configuration files for the enclosure specified by enclosureType.
@@ -106,11 +114,8 @@ public class EnclosureParser extends Parser {
             }
             
             if (iter == 1) {
-                strLine = strLine.replaceAll("\"|>|<", "");
-                strLine = strLine.replaceAll(Const.replaceCommaSpacesRegex, ",");
-                strLine = strLine.replaceAll(Const.replaceSpacesInValuesRegex, "@@");
                 
-                String enclosureValues[] = strLine.split("@@");
+                String enclosureValues[] = extractEnclosureToParts(strLine);
                 enclosure.setType(enclosureValues[0]);
                 StringBuffer enclosureValue = new StringBuffer();
                 for (int j = 1; j < enclosureValues.length; j++) {
