@@ -108,33 +108,20 @@ public class Enclosure {
     
     public String toString() {
         StringBuffer enclosure = new StringBuffer();
-        enclosure.append("<" + type + " " + value + ">" + Const.newLine);
-
-        for (int i = 0; i < directives.size(); i++) {
-            enclosure.append(directives.get(i).toString() + Const.newLine);
+        
+        int enclosureCount = 0;
+        String line;
+        for(int i=0; i<configurationLines.size(); i++) {
+            line = configurationLines.get(i).getProcessedLine();
+            
+            if(Parser.isEnclosureMatch(line) && !Parser.isVHostMatch(line) && i > 0) {
+                enclosure.append(enclosures.get(enclosureCount).toString());
+                enclosureCount ++;
+            } else {
+                enclosure.append(line + Const.newLine);
+            }
         }
-
-        for (int i = 0; i < enclosures.size(); i++) {
-            enclosures.get(i).toString(enclosure);
-        }
-
-        enclosure.append("</" + type + ">" + Const.newLine);
+        
         return enclosure.toString();
     }
-
-    private String toString(StringBuffer enclosure) {
-        enclosure.append("<" + type + " " + value + ">" + Const.newLine);
-
-        for (int i = 0; i < directives.size(); i++) {
-            enclosure.append(directives.get(i).toString() + Const.newLine);
-        }
-
-        for (int i = 0; i < enclosures.size(); i++) {
-            enclosures.get(i).toString(enclosure);
-        }
-
-        enclosure.append("</" + type + ">" + Const.newLine);
-        return enclosure.toString();
-    }
-
 }

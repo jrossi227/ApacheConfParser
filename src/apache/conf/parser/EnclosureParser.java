@@ -101,7 +101,9 @@ public class EnclosureParser extends Parser {
 
             strLine = parsableLine.getConfigurationLine().getProcessedLine();
 
-            enclosure.addConfigurationLine(parsableLine.getConfigurationLine());
+            if(!insideEnclosure) {
+                enclosure.addConfigurationLine(parsableLine.getConfigurationLine());
+            }
             
             if (iter == 1) {
                 strLine = strLine.replaceAll("\"|>|<", "");
@@ -115,6 +117,7 @@ public class EnclosureParser extends Parser {
                     enclosureValue.append(enclosureValues[j] + " ");
                 }
                 enclosure.setValue(enclosureValue.toString().trim());
+                
             } else {
                 if (!isCommentMatch(strLine) && isEnclosureMatch(strLine)) {
                     insideEnclosure = true;
@@ -146,7 +149,8 @@ public class EnclosureParser extends Parser {
                         directive.addValue(directiveValues[j]);
                     }
                     enclosure.addDirective(directive);
-                }
+                    
+                } 
             }
         }
 
