@@ -3,8 +3,6 @@ package apache.conf.parser;
 import java.io.IOException;
 import java.net.URI;
 
-import apache.conf.global.Utils;
-
 /**
  * 
  * <p>
@@ -40,14 +38,12 @@ public class File extends java.io.File {
 
     @Override
     public String getAbsolutePath() {
-        if (Utils.isWindows()) {
-            try {
-                return getCanonicalPath();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            return getCanonicalPath();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
+        
         return super.getAbsolutePath().replaceAll("\\\\", "/");
     }
 
