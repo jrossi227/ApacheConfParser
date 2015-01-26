@@ -30,6 +30,19 @@ public class EnclosureParser extends Parser {
         super(rootConfFile, serverRoot, staticModules, sharedModules);
     }
 
+    /**
+     * <p>
+     * Takes in an enclosure and puts it into parts<br/>
+     * <br/>
+     * 
+     * Example: "<VirtualHost *:80>" will be split into "VirtualHost" "80"
+     * 
+     * </p>
+     * 
+     * @param line
+     *            the line with parts to extract
+     * @return an array with the directive parts
+     */
     public static String[] extractEnclosureToParts(String line) {
         String strLine = line.replaceAll(">|<", "");
         strLine = strLine.replaceAll(Const.replaceCommaSpacesRegex, ",");

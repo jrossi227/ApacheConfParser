@@ -30,6 +30,19 @@ public class DirectiveParser extends Parser {
         super(rootConfFile, serverRoot, staticModules, sharedModules);
     }
 
+    /**
+     * <p>
+     * Takes in a directive and puts it into parts<br/>
+     * <br/>
+     * 
+     * Example: "Listen 80 http" will be split into "Listen" "80" "http"
+     * 
+     * </p>
+     * 
+     * @param line
+     *            the line with parts to extract
+     * @return an array with the directive parts
+     */
     public static String[] extractDirectiveToParts(String line) {
         String strLine = line.replaceAll(Const.replaceCommaSpacesRegex, ",");
         strLine = strLine.replaceAll(Const.replaceSpacesInValuesRegex, "@@");
