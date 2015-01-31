@@ -301,6 +301,10 @@ public class Parser {
         try {
 
             String strLine, cmpLine, concatLine = "";
+            
+            boolean skipIfModuleLine = false;
+            int ifModuleTreeCount = 0;
+            
             int lineNumInFile = 0, currentConcatLineNum = -1;
             while ((strLine = br.readLine()) != null) {
 
@@ -317,55 +321,103 @@ public class Parser {
                 
                 cmpLine = processConfigurationLine(concatLine, defines);
                 
-                configurationLines.add(new ConfigurationLine(concatLine, cmpLine, confFile, currentConcatLineNum, lineNumInFile));
+                boolean isComment = isCommentMatch(cmpLine);
+                configurationLines.add(new ConfigurationLine(concatLine, cmpLine, confFile, isComment, currentConcatLineNum, lineNumInFile));
 
                 concatLine = "";
                 currentConcatLineNum = -1;
                 
-                if (!isCommentMatch(cmpLine) && isIncludeMatch(cmpLine)) {
+                if (!isComment) {
+                                       
+                    if (isIfModuleOpenNegateMatch(cmpLine)) {
+                        if (!skipIfModuleLine) {
+                            skipIfModuleLine = true;
 
-                    String file = getFileFromInclude(cmpLine);
+                            if (!isInNegateModules(cmpLine, staticModules) && !isInNegateModules(cmpLine, sharedModules)) {
+                                skipIfModuleLine = false;
+                            }
 
-                    // if the filename starts with it is an absolute path,
-                    // otherwise its a relative path
-                    File check;
-                    if (file.startsWith("/") || (file.contains(":"))) {
-                        check = new File(file);
-                    } else {
-                        check = new File(serverRoot, file);
+                            if (skipIfModuleLine) {
+                                ifModuleTreeCount++;
+                            }
+                        } else {
+                            // we have found a nested iFModule iterate the counter
+                            ifModuleTreeCount++;
+                        }
+                    } else if (isIfModuleOpenMatch(cmpLine)) {
+                        // Check if were already in a module that isn't loaded
+                        if (!skipIfModuleLine) {
+                            skipIfModuleLine = true;
+
+                            if (isInModules(cmpLine, staticModules) || isInModules(cmpLine, sharedModules)) {
+                                skipIfModuleLine = false;
+                            }
+
+                            // if the module isnt loaded we dont include whats in
+                            // the enclosure
+                            if (skipIfModuleLine) {
+                                ifModuleTreeCount++;
+                            }
+                        } else {
+                            // we have found a nested iFModule iterate the counter
+                            ifModuleTreeCount++;
+                        }
                     }
+                
+                    if (skipIfModuleLine) {
+                        if (isIfModuleCloseMatch(cmpLine)) {
+                            ifModuleTreeCount--;
 
-                    // check if its a directory, if it is we must include all
-                    // files in the directory
-                    if (check.isDirectory()) {
-                        String children[] = check.list();
-
-                        Arrays.sort(children);
-
-                        File refFile;
-                        for (String child : children) {
-                            refFile = new File(check.getAbsolutePath(), child);
-                            if (!refFile.isDirectory()) {
-                                getConfigurationLines(defines, refFile.getAbsolutePath(), configurationLines);
+                            if (ifModuleTreeCount == 0) {
+                                skipIfModuleLine = false;
                             }
                         }
-                    } else {
-                        // check if its wild card here
-                        if (file.contains("*")) {
-                            File parent = new File(check.getParentFile());
-                            String children[] = parent.list();
 
+                    } else if (isIncludeMatch(cmpLine)) {
+    
+                        String file = getFileFromInclude(cmpLine);
+    
+                        // if the filename starts with it is an absolute path,
+                        // otherwise its a relative path
+                        File check;
+                        if (file.startsWith("/") || (file.contains(":"))) {
+                            check = new File(file);
+                        } else {
+                            check = new File(serverRoot, file);
+                        }
+    
+                        // check if its a directory, if it is we must include all
+                        // files in the directory
+                        if (check.isDirectory()) {
+                            String children[] = check.list();
+    
                             Arrays.sort(children);
-
+    
                             File refFile;
                             for (String child : children) {
-                                refFile = new File(parent.getAbsolutePath(), child);
-                                if (!refFile.isDirectory() && refFile.getName().matches(check.getName().replaceAll("\\.", "\\.").replaceAll("\\*", ".*"))) {
+                                refFile = new File(check.getAbsolutePath(), child);
+                                if (!refFile.isDirectory()) {
                                     getConfigurationLines(defines, refFile.getAbsolutePath(), configurationLines);
                                 }
                             }
                         } else {
-                            getConfigurationLines(defines, check.getAbsolutePath(), configurationLines);
+                            // check if its wild card here
+                            if (file.contains("*")) {
+                                File parent = new File(check.getParentFile());
+                                String children[] = parent.list();
+    
+                                Arrays.sort(children);
+    
+                                File refFile;
+                                for (String child : children) {
+                                    refFile = new File(parent.getAbsolutePath(), child);
+                                    if (!refFile.isDirectory() && refFile.getName().matches(check.getName().replaceAll("\\.", "\\.").replaceAll("\\*", ".*"))) {
+                                        getConfigurationLines(defines, refFile.getAbsolutePath(), configurationLines);
+                                    }
+                                }
+                            } else {
+                                getConfigurationLines(defines, check.getAbsolutePath(), configurationLines);
+                            }
                         }
                     }
                 }
@@ -387,16 +439,18 @@ public class Parser {
         boolean skipVirtualHostLine = false;
 
         String cmpLine;
+        boolean isComment;
         for (ConfigurationLine configurationLine : configurationLines) {
             cmpLine = configurationLine.getProcessedLine();
-
+            isComment = configurationLine.isComment();
+            
             /**
              * Parse IfModule statements to see if we should add the directives
              * 
              * Two types of IfModules <IfModule mpm_prefork_module> <IfModule mod_ssl.c>
              * 
              */
-            if (!isCommentMatch(cmpLine)) {
+            if (!isComment) {
 
                 if (isIfModuleOpenNegateMatch(cmpLine)) {
                     if (!skipIfModuleLine) {
@@ -445,7 +499,7 @@ public class Parser {
             }
 
             if (skipIfModuleLine) {
-                if (!isCommentMatch(cmpLine) && isIfModuleCloseMatch(cmpLine)) {
+                if (!isComment && isIfModuleCloseMatch(cmpLine)) {
                     ifModuleTreeCount--;
 
                     if (ifModuleTreeCount == 0) {
@@ -455,7 +509,7 @@ public class Parser {
 
                 lines.add(new ParsableLine(configurationLine, false));
             } else if (skipVirtualHostLine) {
-                if (!isCommentMatch(cmpLine) && isVHostCloseMatch(cmpLine)) {
+                if (!isComment && isVHostCloseMatch(cmpLine)) {
                     skipVirtualHostLine = false;
                 }
 

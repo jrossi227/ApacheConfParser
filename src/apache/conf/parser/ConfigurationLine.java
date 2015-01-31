@@ -12,6 +12,7 @@ package apache.conf.parser;
  * 3. If the configuration line spans multiple lines make it a single line.<br/>
  * <br/>
  * file - The file that contains the line<br/>
+ * isComment - indicates whether the configuration line is a comment<br/>
  * lineOfStart - The line number inside of the file where the configuration line starts<br/>
  * lineOfEnd - The line number insode of the file where the configuration line ends.<br/>
  * 
@@ -24,11 +25,13 @@ public class ConfigurationLine {
     private String file;
     private int lineOfStart;
     private int lineOfEnd;
+    private boolean isComment;
 
-    public ConfigurationLine(String line, String processedLine, String file, int lineOfStart, int lineOfEnd) {
+    public ConfigurationLine(String line, String processedLine, String file, boolean isComment, int lineOfStart, int lineOfEnd) {
         this.line = line;
         this.processedLine = processedLine;
         this.file = file;
+        this.isComment = isComment;
         this.lineOfStart = lineOfStart;
         this.lineOfEnd = lineOfEnd;
     }
@@ -76,6 +79,20 @@ public class ConfigurationLine {
      */
     public void setFile(String file) {
         this.file = file;
+    }
+
+    /**
+     * @return the isComment
+     */
+    public boolean isComment() {
+        return isComment;
+    }
+
+    /**
+     * @param isComment the isComment to set
+     */
+    public void setComment(boolean isComment) {
+        this.isComment = isComment;
     }
 
     /**
