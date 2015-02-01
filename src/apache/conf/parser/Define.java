@@ -44,7 +44,7 @@ public class Define {
             name = parts[0];
         }
         if (parts.length > 1) {
-            value = parts[1];
+            value = parts[1].replaceAll("^\"|\"$", "");
         }
     }
 

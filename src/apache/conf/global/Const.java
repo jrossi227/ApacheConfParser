@@ -15,8 +15,7 @@ public class Const {
     //Selects spaces before or after a comma
     public final static String replaceCommaSpacesRegex = "(\\s*,\\s*)";
     //Selects any space that is not between a quotation
-    public final static String replaceSpacesInValuesRegex = "\\s+(?=((\\\\[\\\\\"]|[^\\\\\"])*\"(\\\\[\\\\\"]|[^\\\\\"])*\")*(\\\\[\\\\\"]|[^\\\\\"])*$)";
-
+    public final static String replaceSpacesInValuesRegex = "\\s+(?=([^\"']*[\"'][^\"']*[\"'])*[^\"']*$)";
     // Constants to search for apache directives
     public final static String defineDirective = "Define";
 
