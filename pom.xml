@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ApacheConfParser</groupId>
+  <artifactId>ApacheConfParser</artifactId>
+  <version>1.0.10-SNAPSHOT</version>
+  <name>ApacheConfParser</name>
+  <description>Java Based Apache Configuration Parser</description>
+  
+  <properties>
+      <jdk.version>1.6</jdk.version>
+      <log4j.version>1.2.15</log4j.version>
+  </properties>
+  
+  <!-- Output to jar format -->
+  <packaging>jar</packaging>
+  
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source/>
+          <target/>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>apache.conf.parser.Main</mainClass>
+              </manifest>
+            </archive>
+            <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+          </configuration>
+          <executions>
+              <execution>
+                <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                <phase>package</phase> <!-- bind to the packaging phase -->
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+          </executions>
+       </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+      <dependency>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+          <version>1.2.15</version>
+          <exclusions>
+             <exclusion>
+                 <groupId>com.sun.jmx</groupId>
+                 <artifactId>jmxri</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>com.sun.jdmk</groupId>
+                 <artifactId>jmxtools</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>javax.jms</groupId>
+                 <artifactId>jms</artifactId>
+             </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+          <version>2.4</version>
+      </dependency>
+  </dependencies>
+</project>
