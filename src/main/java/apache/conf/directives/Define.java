@@ -1,10 +1,11 @@
-package apache.conf.parser;
+package apache.conf.directives;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import apache.conf.global.Const;
 import apache.conf.global.Utils;
+import apache.conf.parser.DirectiveParser;
 
 public class Define {
     /**

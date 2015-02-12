@@ -24,7 +24,7 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>apache.conf.parser.Main</mainClass>
+                <mainClass>apache.conf.global.Main</mainClass>
               </manifest>
             </archive>
             <descriptorRefs>
@@ -45,7 +45,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
-                <excludePackageNames>apache.conf.global</excludePackageNames>
+                <excludePackageNames>apache.conf.global:apache.conf.directives</excludePackageNames>
           </configuration>
           <executions>
             <execution>
