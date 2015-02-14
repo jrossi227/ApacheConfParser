@@ -4,7 +4,7 @@ The ApacheConfParser provides a java library that is used to read the Apache htt
 
 Current Jar
 ---------------------
-The current jar file can be found under the *dist* directory of this project.
+The current jar file can be found under the *dist* directory of this project. You may also download a released jar file from the releases page of this project.
 
 Development Environment
 ----------------------
