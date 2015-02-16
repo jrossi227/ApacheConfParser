@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.apachegui</groupId>
   <artifactId>ApacheConfParser</artifactId>
-  <version>1.0.11-SNAPSHOT</version>
+  <version>1.0.10</version>
   <name>ApacheConfParser</name>
   <description>Java Based Apache Configuration Parser</description>
   
@@ -71,6 +71,7 @@
                 <includes><include>**/*</include></includes>
                 <repositoryName>ApacheConfParser</repositoryName>      <!-- github repo name -->
                 <repositoryOwner>jrossi227</repositoryOwner>    <!-- github username  -->
+                <merge>true</merge>
             </configuration>
             <executions>
               <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
