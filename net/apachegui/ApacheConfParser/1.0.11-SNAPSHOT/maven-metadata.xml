@@ -2,35 +2,35 @@
 <metadata modelVersion="1.1.0">
   <groupId>net.apachegui</groupId>
   <artifactId>ApacheConfParser</artifactId>
-  <version>1.0.10-SNAPSHOT</version>
+  <version>1.0.11-SNAPSHOT</version>
   <versioning>
     <snapshot>
-      <timestamp>20150216.162116</timestamp>
+      <timestamp>20150216.163555</timestamp>
       <buildNumber>1</buildNumber>
     </snapshot>
-    <lastUpdated>20150216162116</lastUpdated>
+    <lastUpdated>20150216163555</lastUpdated>
     <snapshotVersions>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>1.0.10-20150216.162116-1</value>
-        <updated>20150216162116</updated>
+        <value>1.0.11-20150216.163555-1</value>
+        <updated>20150216163555</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0.10-20150216.162116-1</value>
-        <updated>20150216162116</updated>
+        <value>1.0.11-20150216.163555-1</value>
+        <updated>20150216163555</updated>
       </snapshotVersion>
       <snapshotVersion>
         <classifier>jar-with-dependencies</classifier>
         <extension>jar</extension>
-        <value>1.0.10-20150216.162116-1</value>
-        <updated>20150216162116</updated>
+        <value>1.0.11-20150216.163555-1</value>
+        <updated>20150216163555</updated>
       </snapshotVersion>
       <snapshotVersion>
         <classifier>javadoc</classifier>
         <extension>jar</extension>
-        <value>1.0.10-20150216.162116-1</value>
-        <updated>20150216162116</updated>
+        <value>1.0.11-20150216.163555-1</value>
+        <updated>20150216163555</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
