@@ -4,11 +4,14 @@ The ApacheConfParser provides a java library that is used to read the Apache htt
 
 Current Jar
 ---------------------
-The current jar file can be found under the *dist* directory of this project. You may also download a released jar file from the releases page of this project.
+The current jar files can be found under the *dist* directory of this project. You may also download a released jar file from the releases page of this project. The current jar file has two formats:
+
+1. Java library - This is a jar file with the ApacheConfParser code packaged into it. It does not contain any project dependencies. If you wish to run ApacheConfParser solely as a java library then this file is your best option.
+2. Runnable - This is a jar file with all dependencies packaged into it. This jar file has a Main class and is a valid runnable jar file. You can view details on running the jar [here](https://github.com/jrossi227/ApacheConfParser/wiki/Runnable-Jar-Usage). 
 
 Development Environment
 ----------------------
-The ApacheConfParser source code is currently structured as an Eclipse java project. It can be imported to Eclipse using the EGit Eclipse plugin.
+The ApacheConfParser source code is currently structured as a Maven java project. It can be imported to any Java IDE as a Maven project.
 
 Building
 -------------------
@@ -16,26 +19,20 @@ Building
 ####Build Dependancies
 
 - Java 1.6+
-- Ant 
+- Maven
 
-####Building a new jar
+####Building javadoc and new jar files
 
-The following steps can be used to generate a new jar file.
+The following steps can be used to generate javadoc and new jar files.
 
-1. Navigate to the *build* directory.
-2. Open *build.properties* and update the version.
-3. Run *ant jar*
+1. Navigate to the project root directory (This is the directory that contains pom.xml).
+2. Run *mvn clean package*
 
-A new jar file should be generated under *dist*
+The target directory should contain the following after running the package build phase:
 
-####Generating Java Doc
-
-The following steps can be used to generate JavaDoc for the library.
-
-1. Navigate to the *build* directory.
-2. Run *ant javadoc*
-
-javadoc should be generated under *doc*
+1. A new java library jar file. A java library jar file can be found with the following naming convention ApacheConfParser-{version}.jar.
+2. A new runnable jar file. A runnable jar file can be found with the following naming convention ApacheConfParser-{version}-jar-with-dependencies.jar.
+3. New javadoc. Javadoc can be found exploded in the apidocs folder or bundled as jar file with the naming convention ApacheConfParser-{version}-javadoc.jar.
 
 Code Samples
 ------------------------
