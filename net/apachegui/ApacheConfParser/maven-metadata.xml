@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
   <groupId>net.apachegui</groupId>
-  <artifactId>apache-conf-parser</artifactId>
+  <artifactId>ApacheConfParser</artifactId>
   <versioning>
     <versions>
       <version>1.0.10-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20150216161925</lastUpdated>
+    <lastUpdated>20150216162116</lastUpdated>
   </versioning>
 </metadata>
