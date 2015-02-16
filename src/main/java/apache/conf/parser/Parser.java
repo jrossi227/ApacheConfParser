@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import apache.conf.directives.Define;
 import apache.conf.global.Const;
 import apache.conf.global.Utils;
 import apache.conf.modules.Module;

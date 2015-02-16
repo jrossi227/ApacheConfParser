@@ -42,9 +42,9 @@ public class Module implements Comparable<Module> {
     public int hashCode() {
         return (name + type).hashCode();
     }
-
-    @Override
+    
     public int compareTo(Module mod) {
         return this.name.compareTo(mod.getName());
     }
+
 }
