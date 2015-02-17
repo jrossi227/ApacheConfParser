@@ -3,8 +3,31 @@
   <groupId>net.apachegui</groupId>
   <artifactId>ApacheConfParser</artifactId>
   <version>1.0.10</version>
+  
   <name>ApacheConfParser</name>
   <description>Java Based Apache Configuration Parser</description>
+  <url>http://apachegui.net</url>
+  
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+      <id>jrossi227</id>
+      <name>Jonathan Rossi</name>
+      <email>jonathan.m.rossi@gmail.com</email>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>America/Toronto</timezone>
+    </developer>
+  </developers>
   
   <!-- Output to jar format -->
   <packaging>jar</packaging>
