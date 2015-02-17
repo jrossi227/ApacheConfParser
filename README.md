@@ -21,7 +21,36 @@ The current jar files can be found under the *dist* directory of this project. Y
 
 Development Environment
 ----------------------
-The ApacheConfParser source code is currently structured as a Maven java project. It can be imported to any Java IDE as a Maven project.
+The ApacheConfParser source code is currently structured as a Maven enabled java project. It can be imported to any Java IDE as a Maven project.
+
+Maven Dependency
+----------------------
+If you wish to add ApacheConfParser to your project as a Maven dependency then you must add the snippets below to your pom.xml. Version 1.0.10 and above support Maven dependencies.
+
+```xml
+<repositories>
+  ...
+  <repository>
+      <id>ApacheConfParser-mvn-repo</id>
+      <url>https://raw.githubusercontent.com/jrossi227/ApacheConfParser/mvn-repo/</url>
+      <snapshots>
+          <enabled>true</enabled>
+          <updatePolicy>always</updatePolicy>
+      </snapshots>
+  </repository>
+  ...
+</repositories>
+
+<dependencies>
+  ...
+  <dependency>
+      <groupId>net.apachegui</groupId>
+      <artifactId>ApacheConfParser</artifactId>
+      <version>1.0.10</version>
+  </dependency>
+  ...
+</dependencies>  
+```
 
 Building
 -------------------
