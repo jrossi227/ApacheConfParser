@@ -65,7 +65,7 @@ Building
 The following steps can be used to generate javadoc and new jar files.
 
 1. Navigate to the project root directory (This is the directory that contains pom.xml).
-2. Run *mvn clean package*
+2. Run ```mvn clean package```
 
 The target directory should contain the following after running the package build phase:
 
