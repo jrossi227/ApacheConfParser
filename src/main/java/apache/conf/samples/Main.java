@@ -1,4 +1,4 @@
-package apache.conf.global;
+package apache.conf.samples;
 
 import apache.conf.parser.Directive;
 import apache.conf.parser.DirectiveParser;

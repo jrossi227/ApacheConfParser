@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.apachegui</groupId>
   <artifactId>ApacheConfParser</artifactId>
-  <version>1.0.10</version>
+  <version>1.0.11-SNAPSHOT</version>
   
   <name>ApacheConfParser</name>
   <description>Java Based Apache Configuration Parser</description>
@@ -64,7 +64,7 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>apache.conf.global.Main</mainClass>
+                <mainClass>apache.conf.samples.Main</mainClass>
               </manifest>
             </archive>
             <descriptorRefs>
@@ -111,7 +111,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
-                <excludePackageNames>apache.conf.global:apache.conf.directives</excludePackageNames>
+                <excludePackageNames>apache.conf.global:apache.conf.directives:apache.conf.samples</excludePackageNames>
           </configuration>
           <executions>
             <execution>

@@ -1,4 +1,4 @@
-package apache.conf.global;
+package apache.conf.samples;
 
 import apache.conf.modules.SharedModuleParser;
 import apache.conf.modules.StaticModuleParser;
