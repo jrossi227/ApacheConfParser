@@ -1,6 +1,6 @@
 ApacheConfParser
 =====================
-The ApacheConfParser provides a java library that is used to parse and read the Apache http server configuration. The library is currently used to power http://apachegui.net
+The ApacheConfParser provides a java library that is used to parse and read the Apache http server configuration. The library is currently used to power http://apachegui.net. Questions and comments can be sent to apachegui.net@gmail.com
 
 The followng functionality is included in the library:
 
@@ -10,7 +10,9 @@ The followng functionality is included in the library:
 4. Grab the active file list 
 5. Grab currently loaded modules
 6. Various parsing utilties
-7. Much more...
+7. Filters lines inside of IfModule declarations with modules that are not loaded
+8. Supports Multi-line configuration lines
+9. Much more...
 
 Current Jar
 ---------------------
