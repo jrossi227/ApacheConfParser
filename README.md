@@ -10,7 +10,9 @@ The followng functionality is included in the library:
 4. Grab the active file list 
 5. Grab currently loaded modules
 6. Various parsing utilties
-7. Much more...
+7. Filters lines inside of IfModule declarations with modules that are not loaded
+8. Supports Multi-line configuration lines
+9. Much more...
 
 Current Jar
 ---------------------
