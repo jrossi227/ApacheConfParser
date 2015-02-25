@@ -3,31 +3,8 @@
   <groupId>net.apachegui</groupId>
   <artifactId>ApacheConfParser</artifactId>
   <version>1.0.10</version>
-  
   <name>ApacheConfParser</name>
   <description>Java Based Apache Configuration Parser</description>
-  <url>http://apachegui.net</url>
-  
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  
-  <developers>
-    <developer>
-      <id>jrossi227</id>
-      <name>Jonathan Rossi</name>
-      <email>jonathan.m.rossi@gmail.com</email>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>America/Toronto</timezone>
-    </developer>
-  </developers>
   
   <!-- Output to jar format -->
   <packaging>jar</packaging>
@@ -35,7 +12,6 @@
   <properties>
     <!-- github server corresponds to entry in ~/.m2/settings.xml -->
     <github.global.server>github</github.global.server>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   
   <distributionManagement>
@@ -64,7 +40,7 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>apache.conf.samples.Main</mainClass>
+                <mainClass>apache.conf.global.Main</mainClass>
               </manifest>
             </archive>
             <descriptorRefs>
@@ -94,7 +70,6 @@
                 <includes><include>**/*</include></includes>
                 <repositoryName>ApacheConfParser</repositoryName>      <!-- github repo name -->
                 <repositoryOwner>jrossi227</repositoryOwner>    <!-- github username  -->
-                <merge>true</merge>
             </configuration>
             <executions>
               <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
