@@ -571,6 +571,34 @@ public class Parser {
     }
 
     /**
+     *
+     * Gets the active file list as it appears in the configuration.
+     * If the user includes a configuration file more than once then it will be added multiple times to the list.
+     *
+     * @return an array with all included configuration files. The list of files is in the order that they appear in the apache configuration.
+     * @throws Exception
+     */
+    public String[] getActiveConfFileListWithDuplicates() throws Exception {
+
+        ParsableLine lines[] = getConfigurationParsableLines(true);
+
+        ArrayList<String> files = new ArrayList<String>();
+
+        ConfigurationLine configurationLine;
+        for (ParsableLine line : lines) {
+            if (line.isInclude()) {
+                configurationLine = line.getConfigurationLine();
+                if (configurationLine.getLineOfStart() == 1) {
+                    files.add(configurationLine.getFile());
+                }
+            }
+        }
+
+        return files.toArray(new String[files.size()]);
+
+    }
+
+    /**
      * Gets a unique list of configuration files currently included in the apache configuration. 
      * 
      * @return an array with all included configuration files. The list of files is in the order that they appear in the apache configuration.
@@ -578,21 +606,12 @@ public class Parser {
      */
     public String[] getActiveConfFileList() throws Exception {
 
-        ParsableLine lines[] = getConfigurationParsableLines(true);
+        String activeFiles[] = getActiveConfFileListWithDuplicates();
 
         ArrayList<String> files = new ArrayList<String>();
-        HashMap<String, Boolean> fileIncludes = new HashMap<String, Boolean>();
-
-        String file;
-        for (ParsableLine line : lines) {
-            if (line.isInclude()) {
-
-                file = line.getConfigurationLine().getFile();
-                if (fileIncludes.get(file) == null) {
-                    fileIncludes.put(file, true);
-                    files.add(file);
-                }
-
+        for(String activeFile : activeFiles) {
+            if(!files.contains(activeFile)) {
+                files.add(activeFile);
             }
         }
 
