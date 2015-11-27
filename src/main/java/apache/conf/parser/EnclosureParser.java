@@ -1,13 +1,13 @@
 package apache.conf.parser;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-
 import apache.conf.global.Const;
 import apache.conf.global.Utils;
 import apache.conf.modules.SharedModule;
 import apache.conf.modules.StaticModule;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -106,7 +106,7 @@ public class EnclosureParser extends Parser {
         return enclosures.toArray(new Enclosure[enclosures.size()]);
     }
 
-    private Enclosure parseEnclosure(ParsableLine[] parsableLines, boolean includeVHosts) throws Exception {
+    public Enclosure parseEnclosure(ParsableLine[] parsableLines, boolean includeVHosts) throws Exception {
 
         String strLine;
         Enclosure enclosure = new Enclosure();
