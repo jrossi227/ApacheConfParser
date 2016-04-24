@@ -4,8 +4,8 @@
   <artifactId>ApacheConfParser</artifactId>
   <versioning>
     <versions>
-      <version>1.0.11-SNAPSHOT</version>
+      <version>1.0.12-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20151127215346</lastUpdated>
+    <lastUpdated>20160424001100</lastUpdated>
   </versioning>
 </metadata>
