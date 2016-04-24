@@ -1,20 +1,20 @@
 package apache.conf.parser;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.regex.Pattern;
-
 import apache.conf.directives.Define;
 import apache.conf.global.Const;
 import apache.conf.global.Utils;
 import apache.conf.modules.Module;
 import apache.conf.modules.SharedModule;
 import apache.conf.modules.StaticModule;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Stack;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -302,9 +302,7 @@ public class Parser {
         try {
 
             String strLine, cmpLine, concatLine = "";
-            
-            boolean skipIfModuleLine = false;
-            int ifModuleTreeCount = 0;
+            Stack ifModuleStack = new Stack();
             
             int lineNumInFile = 0, currentConcatLineNum = -1;
             while ((strLine = br.readLine()) != null) {
@@ -331,47 +329,29 @@ public class Parser {
                 if (!isComment) {
                                        
                     if (isIfModuleOpenNegateMatch(cmpLine)) {
-                        if (!skipIfModuleLine) {
-                            skipIfModuleLine = true;
-
-                            if (!isInNegateModules(cmpLine, staticModules) && !isInNegateModules(cmpLine, sharedModules)) {
-                                skipIfModuleLine = false;
-                            }
-
-                            if (skipIfModuleLine) {
-                                ifModuleTreeCount++;
+                        if (ifModuleStack.isEmpty()) {
+                            if (isInNegateModules(cmpLine, staticModules) || isInNegateModules(cmpLine, sharedModules)) {
+                                ifModuleStack.push(cmpLine);
                             }
                         } else {
                             // we have found a nested iFModule iterate the counter
-                            ifModuleTreeCount++;
+                            ifModuleStack.push(cmpLine);
                         }
                     } else if (isIfModuleOpenMatch(cmpLine)) {
                         // Check if were already in a module that isn't loaded
-                        if (!skipIfModuleLine) {
-                            skipIfModuleLine = true;
-
-                            if (isInModules(cmpLine, staticModules) || isInModules(cmpLine, sharedModules)) {
-                                skipIfModuleLine = false;
-                            }
-
-                            // if the module isnt loaded we dont include whats in
-                            // the enclosure
-                            if (skipIfModuleLine) {
-                                ifModuleTreeCount++;
+                        if (ifModuleStack.isEmpty()) {
+                            if (!isInModules(cmpLine, staticModules) && !isInModules(cmpLine, sharedModules)) {
+                                ifModuleStack.push(cmpLine);
                             }
                         } else {
                             // we have found a nested iFModule iterate the counter
-                            ifModuleTreeCount++;
+                            ifModuleStack.push(cmpLine);
                         }
                     }
-                
-                    if (skipIfModuleLine) {
-                        if (isIfModuleCloseMatch(cmpLine)) {
-                            ifModuleTreeCount--;
 
-                            if (ifModuleTreeCount == 0) {
-                                skipIfModuleLine = false;
-                            }
+                    if (!ifModuleStack.isEmpty()) {
+                        if (isIfModuleCloseMatch(cmpLine)) {
+                            ifModuleStack.pop();
                         }
 
                     } else if (isIncludeMatch(cmpLine)) {
@@ -433,11 +413,8 @@ public class Parser {
     protected ParsableLine[] getParsableLines(ConfigurationLine[] configurationLines, boolean includeVHosts) throws Exception {
 
         ArrayList<ParsableLine> lines = new ArrayList<ParsableLine>();
-
-        boolean skipIfModuleLine = false;
-        int ifModuleTreeCount = 0;
-
-        boolean skipVirtualHostLine = false;
+        Stack ifModuleStack = new Stack();
+        Stack virtualHostStack = new Stack();
 
         String cmpLine;
         boolean isComment;
@@ -454,37 +431,23 @@ public class Parser {
             if (!isComment) {
 
                 if (isIfModuleOpenNegateMatch(cmpLine)) {
-                    if (!skipIfModuleLine) {
-                        skipIfModuleLine = true;
-
-                        if (!isInNegateModules(cmpLine, staticModules) && !isInNegateModules(cmpLine, sharedModules)) {
-                            skipIfModuleLine = false;
-                        }
-
-                        if (skipIfModuleLine) {
-                            ifModuleTreeCount++;
+                    if (ifModuleStack.isEmpty()) {
+                        if (isInNegateModules(cmpLine, staticModules) || isInNegateModules(cmpLine, sharedModules)) {
+                            ifModuleStack.push(cmpLine);
                         }
                     } else {
                         // we have found a nested iFModule iterate the counter
-                        ifModuleTreeCount++;
+                        ifModuleStack.push(cmpLine);
                     }
                 } else if (isIfModuleOpenMatch(cmpLine)) {
                     // Check if were already in a module that isn't loaded
-                    if (!skipIfModuleLine) {
-                        skipIfModuleLine = true;
-
-                        if (isInModules(cmpLine, staticModules) || isInModules(cmpLine, sharedModules)) {
-                            skipIfModuleLine = false;
-                        }
-
-                        // if the module isnt loaded we dont include whats in
-                        // the enclosure
-                        if (skipIfModuleLine) {
-                            ifModuleTreeCount++;
+                    if (ifModuleStack.isEmpty()) {
+                        if (!isInModules(cmpLine, staticModules) && !isInModules(cmpLine, sharedModules)) {
+                            ifModuleStack.push(cmpLine);
                         }
                     } else {
                         // we have found a nested iFModule iterate the counter
-                        ifModuleTreeCount++;
+                        ifModuleStack.push(cmpLine);
                     }
                 }
 
@@ -495,23 +458,19 @@ public class Parser {
                  * 
                  */
                 if (!includeVHosts && isVHostMatch(cmpLine)) {
-                    skipVirtualHostLine = true;
+                    virtualHostStack.push(cmpLine);
                 }
             }
 
-            if (skipIfModuleLine) {
+            if (!ifModuleStack.isEmpty()) {
                 if (!isComment && isIfModuleCloseMatch(cmpLine)) {
-                    ifModuleTreeCount--;
-
-                    if (ifModuleTreeCount == 0) {
-                        skipIfModuleLine = false;
-                    }
+                    ifModuleStack.pop();
                 }
 
                 lines.add(new ParsableLine(configurationLine, false));
-            } else if (skipVirtualHostLine) {
+            } else if (!virtualHostStack.isEmpty()) {
                 if (!isComment && isVHostCloseMatch(cmpLine)) {
-                    skipVirtualHostLine = false;
+                    virtualHostStack.pop();
                 }
 
                 lines.add(new ParsableLine(configurationLine, false));

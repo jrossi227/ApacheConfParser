@@ -7,6 +7,7 @@ import apache.conf.modules.StaticModule;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.regex.Pattern;
 
 /**
@@ -73,28 +74,25 @@ public class EnclosureParser extends Parser {
         ParsableLine lines[] = getConfigurationParsableLines(includeVHosts);
 
         String strLine;
-        boolean insideEnclosure = false;
         ArrayList<ParsableLine> parsableLines = new ArrayList<ParsableLine>();
 
-        int treeCount = 0;
+        Stack enclosureStack = new Stack();
         for (ParsableLine line : lines) {
             if (line.isInclude()) {
                 strLine = line.getConfigurationLine().getProcessedLine();
 
                 if (!isCommentMatch(strLine) && isEnclosureTypeMatch(strLine, enclosureType)) {
-                    insideEnclosure = true;
-                    treeCount++;
+                    enclosureStack.push(strLine);
                 }
-                if (insideEnclosure) {
+                if (!enclosureStack.isEmpty()) {
                     if (!isCommentMatch(strLine) && !strLine.equals("")) {
                         parsableLines.add(line);
                     }
 
                     if (!isCommentMatch(strLine) && isCloseEnclosureTypeMatch(strLine, enclosureType)) {
-                        treeCount--;
+                        enclosureStack.pop();
 
-                        if (treeCount == 0) {
-                            insideEnclosure = false;
+                        if (enclosureStack.isEmpty()) {
                             enclosures.add(parseEnclosure(parsableLines.toArray(new ParsableLine[parsableLines.size()]), includeVHosts));
                             parsableLines.clear();
                         }
@@ -110,10 +108,8 @@ public class EnclosureParser extends Parser {
 
         String strLine;
         Enclosure enclosure = new Enclosure();
-        boolean insideEnclosure = false;
 
-        int treeCount = 0;
-
+        Stack enclosureStack = new Stack();
         ArrayList<ParsableLine> subParsableLines = new ArrayList<ParsableLine>();
 
         int iter = 0;
@@ -122,7 +118,7 @@ public class EnclosureParser extends Parser {
 
             strLine = parsableLine.getConfigurationLine().getProcessedLine();
 
-            if(!insideEnclosure) {
+            if(enclosureStack.isEmpty()) {
                 enclosure.addConfigurationLine(parsableLine.getConfigurationLine());
             }
             
@@ -138,19 +134,17 @@ public class EnclosureParser extends Parser {
                 
             } else {
                 if (!isCommentMatch(strLine) && isEnclosureMatch(strLine)) {
-                    insideEnclosure = true;
-                    treeCount++;
+                    enclosureStack.push(strLine);
                 }
-                if (insideEnclosure) {
+                if (!enclosureStack.isEmpty()) {
                     if (!isCommentMatch(strLine)) {
                         subParsableLines.add(parsableLine);
                     }
 
                     if (!isCommentMatch(strLine) && isCloseEnclosureMatch(strLine)) {
-                        treeCount--;
+                        enclosureStack.pop();
 
-                        if (treeCount == 0) {
-                            insideEnclosure = false;
+                        if (enclosureStack.isEmpty()) {
                             enclosure.addEnclosure(parseEnclosure(subParsableLines.toArray(new ParsableLine[subParsableLines.size()]), includeVHosts));
                             subParsableLines.clear();
                         }
@@ -192,7 +186,7 @@ public class EnclosureParser extends Parser {
 
         String includedFiles[] = getActiveConfFileList();
 
-        boolean changed = false, insideEnclosure = false;
+        boolean changed = false;
         StringBuffer fileText = new StringBuffer();
 
         ParsableLine lines[];
@@ -201,11 +195,11 @@ public class EnclosureParser extends Parser {
 
             fileText.delete(0, fileText.length());
 
-            changed = insideEnclosure = false;
+            changed = false;
 
             lines = getFileParsableLines(file, includeVHosts);
 
-            int treeCount = 0;
+            Stack enclosureStack = new Stack();
             String strLine = "", cmpLine = "";
             for (ParsableLine line : lines) {
                 strLine = line.getConfigurationLine().getLine();
@@ -215,21 +209,14 @@ public class EnclosureParser extends Parser {
 
                     if (matchesValuePattern.matcher(cmpLine).find()) {
 
-                        treeCount++;
-
-                        insideEnclosure = true;
-
+                        enclosureStack.push(cmpLine);
                         changed = true;
                     }
                 }
 
-                if (insideEnclosure) {
+                if (!enclosureStack.isEmpty()) {
                     if (!isCommentMatch(cmpLine) && isCloseEnclosureTypeMatch(cmpLine, enclosureType)) {
-                        treeCount--;
-
-                        if (treeCount == 0) {
-                            insideEnclosure = false;
-                        }
+                        enclosureStack.pop();
                     }
 
                     if (!cmpLine.startsWith("#") && commentOut) {
