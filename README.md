@@ -57,12 +57,12 @@ If you wish to add ApacheConfParser to your project as a Maven dependency then y
 Building
 -------------------
 
-####Build Dependancies
+#### Build Dependancies
 
 - Java 1.6+
 - Maven
 
-####Building javadoc and new jar files
+#### Building javadoc and new jar files
 
 The following steps can be used to generate javadoc and new jar files.
 
